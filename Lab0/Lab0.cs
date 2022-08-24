@@ -18,18 +18,12 @@ namespace Lab0
             IsMouseVisible = true;
         }
 
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-
-            base.Initialize();
-        }
+        protected override void Initialize() { base.Initialize(); }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             texture = Content.Load<Texture2D>("background");
         }
 
