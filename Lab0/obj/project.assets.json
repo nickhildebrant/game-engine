@@ -7532,23 +7532,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\njhildeb\\.nuget\\packages\\": {},
+    "C:\\Users\\nickh\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\njhildeb\\source\\repos\\CPI311\\Lab0\\Lab0.csproj",
+      "projectUniqueName": "C:\\Users\\nickh\\OneDrive\\Documents\\GitHub\\game-engine\\Lab0\\Lab0.csproj",
       "projectName": "Lab0",
-      "projectPath": "C:\\Users\\njhildeb\\source\\repos\\CPI311\\Lab0\\Lab0.csproj",
-      "packagesPath": "C:\\Users\\njhildeb\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\njhildeb\\source\\repos\\CPI311\\Lab0\\obj\\",
+      "projectPath": "C:\\Users\\nickh\\OneDrive\\Documents\\GitHub\\game-engine\\Lab0\\Lab0.csproj",
+      "packagesPath": "C:\\Users\\nickh\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nickh\\OneDrive\\Documents\\GitHub\\game-engine\\Lab0\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\njhildeb\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\nickh\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -7557,7 +7557,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
