@@ -50,12 +50,12 @@ namespace CPI311.Labs {
 
         public static Fraction operator + (Fraction a, Fraction b)
         {
-            return new Fraction(a.numerator * b.numerator + a.denominator * b.numerator, a.denominator * b.denominator);
+            return new Fraction(a.numerator * b.denominator + b.numerator * a.denominator, a.denominator * b.denominator);
         }
 
         public static Fraction operator - (Fraction a, Fraction b)
         {
-            return new Fraction(a.numerator * b.numerator - a.denominator * b.numerator, a.denominator * b.denominator);
+            return new Fraction(a.numerator * b.denominator - b.numerator * a.denominator, a.denominator * b.denominator);
         }
 
         public static int GCD(int bigger, int smaller)
