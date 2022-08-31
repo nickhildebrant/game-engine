@@ -7,7 +7,10 @@ namespace CPI311.Labs {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        SpriteFont font;
+        SpriteFont font; // Lab0 used Texture2D
+
+        private Fraction a = new Fraction(3, 4);
+        private Fraction b = new Fraction(8, 3);
 
         public Lab1() {
             _graphics = new GraphicsDeviceManager(this);
@@ -36,10 +39,17 @@ namespace CPI311.Labs {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(font, "Hello, World!", new Vector2(100, 100), Color.Black);
-            _spriteBatch.DrawString(font, "CPI311 2022", new Vector2(100, 120), Color.Black);
-            _spriteBatch.DrawString(font, "Yoshi is the instructor", new Vector2(100, 140), Color.Black);
-            _spriteBatch.DrawString(font, "brabrabrba", new Vector2(100, 160), Color.Black);
+            _spriteBatch.DrawString(font, a + " + " + b + " = " + (a + b), new Vector2(50, 50), Color.Black);
+            _spriteBatch.DrawString(font, a + " - " + b + " = " + (a - b), new Vector2(50, 100), Color.Black);
+            _spriteBatch.DrawString(font, a + " * " + b + " = " + (a * b), new Vector2(50, 150), Color.Black);
+            _spriteBatch.DrawString(font, a + " / " + b + " = " + (a / b), new Vector2(50, 200), Color.Black);
+
+            //_spriteBatch.DrawString(font, a + " * " + b + " = " + Fraction.multiply(a, b), new Vector2(50, 50), Color.Black);
+
+            //_spriteBatch.DrawString(font, "Hello, World!", new Vector2(100, 100), Color.Black);
+            //_spriteBatch.DrawString(font, "CPI311 2022", new Vector2(100, 120), Color.Black);
+            //_spriteBatch.DrawString(font, "Yoshi is the instructor", new Vector2(100, 140), Color.Black);
+            //_spriteBatch.DrawString(font, "brabrabrba", new Vector2(100, 160), Color.Black);
             _spriteBatch.End();
 
             base.Draw(gameTime);
