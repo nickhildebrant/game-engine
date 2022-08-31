@@ -47,10 +47,10 @@ namespace CPI311.Labs
             Time.Update(gameTime);
 
             if (InputManager.IsKeyDown(Keys.Space)) sprite.Rotation += 0.05f;
-            if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 20 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Right)) sprite.Position += Vector2.UnitX * 20 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Up)) sprite.Position -= Vector2.UnitY * 20 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Down)) sprite.Position += Vector2.UnitY * 20 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 200 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.Right)) sprite.Position += Vector2.UnitX * 200 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.Up)) sprite.Position -= Vector2.UnitY * 200 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.Down)) sprite.Position += Vector2.UnitY * 200 * Time.ElapsedGameTime;
 
             // Keyboard input
             //KeyboardState currentState = Keyboard.GetState();
