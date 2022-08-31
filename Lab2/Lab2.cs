@@ -2,12 +2,18 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using CPI311.GameEngine;
+
 namespace CPI311.Labs
 {
     public class Lab2 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        
+        // Lab2 New Items
+        Sprite sprite;
+        KeyboardState prevState;
 
         public Lab2()
         {
@@ -18,8 +24,7 @@ namespace CPI311.Labs
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            prevState = Keyboard.GetState();
             base.Initialize();
         }
 
@@ -27,7 +32,7 @@ namespace CPI311.Labs
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            sprite = new Sprite(Content.Load<Texture2D>("Square"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,7 +40,15 @@ namespace CPI311.Labs
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            KeyboardState currentState = Keyboard.GetState();
+            if (currentState.IsKeyDown(Keys.Right) && prevState.IsKeyUp(Keys.Left)) sprite.Position += Vector2.UnitX * 5;
+            if (currentState.IsKeyDown(Keys.Left) && prevState.IsKeyUp(Keys.Right)) sprite.Position -= Vector2.UnitX * 5;
+            if (currentState.IsKeyDown(Keys.Up) && prevState.IsKeyUp(Keys.Down)) sprite.Position -= Vector2.UnitY * 5;
+            if (currentState.IsKeyDown(Keys.Down) && prevState.IsKeyUp(Keys.Up)) sprite.Position += Vector2.UnitY * 5;
+
+            // ***** Important to update ******
+            prevState = currentState;
+            // ********************************
 
             base.Update(gameTime);
         }
@@ -44,7 +57,9 @@ namespace CPI311.Labs
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            sprite.Draw(_spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
