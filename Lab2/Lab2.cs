@@ -24,7 +24,8 @@ namespace CPI311.Labs
 
         protected override void Initialize()
         {
-            prevState = Keyboard.GetState();
+            //prevState = Keyboard.GetState();
+            InputManager.Initialize();
             base.Initialize();
         }
 
@@ -40,14 +41,22 @@ namespace CPI311.Labs
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            KeyboardState currentState = Keyboard.GetState();
-            if (currentState.IsKeyDown(Keys.Right) && prevState.IsKeyUp(Keys.Left)) sprite.Position += Vector2.UnitX * 5;
-            if (currentState.IsKeyDown(Keys.Left) && prevState.IsKeyUp(Keys.Right)) sprite.Position -= Vector2.UnitX * 5;
-            if (currentState.IsKeyDown(Keys.Up) && prevState.IsKeyUp(Keys.Down)) sprite.Position -= Vector2.UnitY * 5;
-            if (currentState.IsKeyDown(Keys.Down) && prevState.IsKeyUp(Keys.Up)) sprite.Position += Vector2.UnitY * 5;
+            InputManager.Update();
+            if (InputManager.IsKeyDown(Keys.Space)) sprite.Rotation += 0.05f;
+            if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 5;
+            if (InputManager.IsKeyDown(Keys.Right)) sprite.Position += Vector2.UnitX * 5;
+            if (InputManager.IsKeyDown(Keys.Up)) sprite.Position += Vector2.UnitY * 5;
+            if (InputManager.IsKeyDown(Keys.Down)) sprite.Position -= Vector2.UnitY * 5;
 
+            // Keyboard input
+            //KeyboardState currentState = Keyboard.GetState();
+            //if (currentState.IsKeyDown(Keys.Right) && prevState.IsKeyUp(Keys.Left)) sprite.Position += Vector2.UnitX * 5;
+            //if (currentState.IsKeyDown(Keys.Left) && prevState.IsKeyUp(Keys.Right)) sprite.Position -= Vector2.UnitX * 5;
+            //if (currentState.IsKeyDown(Keys.Up) && prevState.IsKeyUp(Keys.Down)) sprite.Position -= Vector2.UnitY * 5;
+            //if (currentState.IsKeyDown(Keys.Down) && prevState.IsKeyUp(Keys.Up)) sprite.Position += Vector2.UnitY * 5;
+            //
             // ***** Important to update ******
-            prevState = currentState;
+            //prevState = currentState;
             // ********************************
 
             base.Update(gameTime);
