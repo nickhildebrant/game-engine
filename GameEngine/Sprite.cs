@@ -37,9 +37,15 @@ namespace CPI311.GameEngine
 
         // Update and Draw
         public virtual void Update() { }
-        public virtual void Draw(SpriteBatch spriteBatch) 
+
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, Position, Source, Color, Rotation, Origin, Scale, Effect, Layer);
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 position)
+        {
+            spriteBatch.Draw(Texture, position, Source, Color, Rotation, Origin, Scale, Effect, Layer);
         }
     }
 }

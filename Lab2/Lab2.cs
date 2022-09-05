@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CPI311.GameEngine;
+using System;
 
 namespace CPI311.Labs
 {
@@ -13,7 +14,9 @@ namespace CPI311.Labs
         
         // Lab2 New Items
         Sprite sprite;
-        KeyboardState prevState;
+        float totalTime = 0;
+        float radius = 1.0f;  // For the circle radius
+        float speed = 1.0f;   // For the circle speed
 
         public Lab2()
         {
@@ -45,12 +48,23 @@ namespace CPI311.Labs
 
             InputManager.Update();
             Time.Update(gameTime);
+            totalTime += Time.ElapsedGameTime;
 
-            if (InputManager.IsKeyDown(Keys.Space)) sprite.Rotation += 0.05f;
-            if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 200 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Right)) sprite.Position += Vector2.UnitX * 200 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Up)) sprite.Position -= Vector2.UnitY * 200 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Down)) sprite.Position += Vector2.UnitY * 200 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.Right)) radius++;
+            if (InputManager.IsKeyDown(Keys.Left)) radius--;
+            if (InputManager.IsKeyDown(Keys.Up)) speed += .25f;
+            if (InputManager.IsKeyDown(Keys.Down)) speed -= .25f;
+
+            //sprite.Position += new Vector2(radius * (float)Math.Cos(totalTime), 0);
+            sprite.Position += new Vector2(radius * (float)Math.Cos(totalTime), radius * (float)Math.Sin(totalTime));
+
+            //sprite.Position *= new Vector2((float)(radius * Math.Acos(Time.ElapsedGameTime)), (float)(radius * Math.Asin(Time.ElapsedGameTime)));
+
+            //if (InputManager.IsKeyDown(Keys.Space)) sprite.Rotation += 0.05f;
+            //if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 200 * Time.ElapsedGameTime;
+            //if (InputManager.IsKeyDown(Keys.Right)) sprite.Position += Vector2.UnitX * 200 * Time.ElapsedGameTime;
+            //if (InputManager.IsKeyDown(Keys.Up)) sprite.Position -= Vector2.UnitY * 200 * Time.ElapsedGameTime;
+            //if (InputManager.IsKeyDown(Keys.Down)) sprite.Position += Vector2.UnitY * 200 * Time.ElapsedGameTime;
 
             // Keyboard input
             //KeyboardState currentState = Keyboard.GetState();
