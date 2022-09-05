@@ -27,7 +27,7 @@ namespace CPI311.Labs
             Speed = 1f;
 
             Amplitude = 20f; // A -- Amplitude
-            Period = 20f;    // B -- Frequency, tied to period
+            Period = 15f;    // B -- Frequency, tied to period
             Phase = 0f;      // C -- Phase, horizontal shift
         }
 
