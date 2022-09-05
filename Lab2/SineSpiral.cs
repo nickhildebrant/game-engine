@@ -12,32 +12,31 @@ namespace CPI311.Labs
     public class SineSpiral
     {
         public Sprite Sprite { get; set; }
-        public Vector2 Position { get; set; }
+        public Vector2 Origin { get; set; }
         public float Radius { get; set; }
         public float Speed { get; set; }
         public float Amplitude { get; set; }
         public float Period { get; set; }
-        public float Phase { get; set; }
+        public float TimePassed { get; set; }
 
-        public SineSpiral(Texture2D texture, Vector2 position)
+        public SineSpiral(Texture2D texture, Vector2 pos)
         {
             Sprite = new Sprite(texture);
-            Position = position;
+            Origin = pos;
             Radius = 150f;
             Speed = 1f;
 
-            Amplitude = 20f; // A -- Amplitude
-            Period = 15f;    // B -- Frequency, tied to period
-            Phase = 0f;      // C -- Phase, horizontal shift
+            Amplitude = 20f;
+            Period = 15f;
+            TimePassed = 0f;
         }
 
         public virtual void Update()
         {
-            // y = Asin(Bx+C)+D -- Sine graph
-            // x = (r+cos(t))*cos(t), y = (r+cos(t))*sin(t)
-            Phase += Speed * Time.ElapsedGameTime;
-            Sprite.Position = Position + new Vector2((float)((Radius + Amplitude * Math.Cos(Period * Phase)) * Math.Cos(Phase)),
-                                                     (float)((Radius + Amplitude * Math.Cos(Period * Phase)) * Math.Sin(Phase)));
+            // x = (r+Acos(t))*cos(t), y = (r+Acos(t))*sin(t)
+            TimePassed += Speed * Time.ElapsedGameTime;
+            Sprite.Position = Origin + new Vector2(((Radius + Amplitude * (float)Math.Cos(Period * TimePassed)) * (float)Math.Cos(TimePassed)),
+                                                   ((Radius + Amplitude * (float)Math.Cos(Period * TimePassed)) * (float)Math.Sin(TimePassed)));
         }
 
         public virtual void Draw(SpriteBatch spriteBatch) { Sprite.Draw(spriteBatch); }
