@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using CPI311.GameEngine;
 
 namespace CPI311.Labs
@@ -31,17 +31,15 @@ namespace CPI311.Labs
             Phase = 0f;      // C -- Phase, horizontal shift
         }
 
-        public void Update()
+        public virtual void Update()
         {
             // y = Asin(Bx+C)+D -- Sine graph
+            // x = (r+cos(t))*cos(t), y = (r+cos(t))*sin(t)
             Phase += Speed * Time.ElapsedGameTime;
             Sprite.Position = Position + new Vector2((float)((Radius + Amplitude * Math.Cos(Period * Phase)) * Math.Cos(Phase)),
                                                      (float)((Radius + Amplitude * Math.Cos(Period * Phase)) * Math.Sin(Phase)));
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-            Sprite.Draw(spriteBatch);
-        }
+        public virtual void Draw(SpriteBatch spriteBatch) { Sprite.Draw(spriteBatch); }
     }
 }
