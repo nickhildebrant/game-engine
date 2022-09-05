@@ -19,7 +19,6 @@ namespace CPI311.GameEngine
             PreviousKeyboardState = CurrentKeyboardState = Keyboard.GetState();
             PreviousMouseState = CurrentMouseState = Mouse.GetState();
         }
-
         public static void Update()
         {
             PreviousKeyboardState = CurrentKeyboardState;
@@ -27,12 +26,10 @@ namespace CPI311.GameEngine
             PreviousMouseState = CurrentMouseState;
             CurrentMouseState = Mouse.GetState();
         }
-
         public static bool IsKeyDown(Keys key)
         {
             return CurrentKeyboardState.IsKeyDown(key);
         }
-
         public static bool IsKeyPressed(Keys key)
         {
             return CurrentKeyboardState.IsKeyDown(key) &&
