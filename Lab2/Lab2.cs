@@ -44,10 +44,10 @@ namespace CPI311.Labs
             Time.Update(gameTime);
             sprite.Update();
 
-            if (InputManager.IsKeyDown(Keys.Left) && sprite.Radius > 0) sprite.Radius -= Time.ElapsedGameTime * 100;
-            if (InputManager.IsKeyDown(Keys.Right)) sprite.Radius += Time.ElapsedGameTime * 100;
-            if (InputManager.IsKeyDown(Keys.Up)) sprite.Speed += Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Down) && sprite.Speed > 0) sprite.Speed -= Time.ElapsedGameTime;
+            //if (InputManager.IsKeyDown(Keys.Left) && sprite.Radius > 0) sprite.Radius -= Time.ElapsedGameTime * 100;
+            //if (InputManager.IsKeyDown(Keys.Right)) sprite.Radius += Time.ElapsedGameTime * 100;
+            //if (InputManager.IsKeyDown(Keys.Up)) sprite.Speed += Time.ElapsedGameTime;
+            //if (InputManager.IsKeyDown(Keys.Down) && sprite.Speed > 0) sprite.Speed -= Time.ElapsedGameTime;
 
             //if (InputManager.IsKeyDown(Keys.Space)) sprite.Rotation += 0.05f;
             //if (InputManager.IsKeyDown(Keys.Left)) sprite.Position -= Vector2.UnitX * 20 * Time.ElapsedGameTime;
