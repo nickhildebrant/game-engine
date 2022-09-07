@@ -35,8 +35,8 @@ namespace CPI311.GameEngine
             Phase += Speed * Time.ElapsedGameTime;
 
             // Changing the Radius of the main circle
-            if (InputManager.IsKeyDown(Keys.Up)) Radius += Time.ElapsedGameTime * 10;
-            if (InputManager.IsKeyDown(Keys.Down) && Radius > 0) Radius -= Time.ElapsedGameTime * 10;
+            if (InputManager.IsKeyDown(Keys.Up)) Radius += Time.ElapsedGameTime * 50;
+            if (InputManager.IsKeyDown(Keys.Down) && Radius > 0) Radius -= Time.ElapsedGameTime * 50;
             
             // Changing the speed the sprite travels
             if (InputManager.IsKeyDown(Keys.Left) && Speed > 0) Speed -= Time.ElapsedGameTime;

@@ -41,7 +41,7 @@ namespace CPI311.Labs
 
             InputManager.Update();
             Time.Update(gameTime);
-            
+
             spiralMover.Update();
 
             base.Update(gameTime);
