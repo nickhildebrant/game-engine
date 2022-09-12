@@ -85,7 +85,7 @@ namespace CPI311.Labs
                 if (InputManager.IsKeyDown(Keys.S)) cameraCenter += 2 * Vector2.UnitY * Time.ElapsedGameTime;
                 if (InputManager.IsKeyDown(Keys.D)) cameraCenter -= 2 * Vector2.UnitX * Time.ElapsedGameTime;
             }
-            else if(InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.LeftControl))
+            else if(InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.LeftControl)) // the control key is held down
             {
                 // Move width and height of view
                 if (InputManager.IsKeyDown(Keys.W) && cameraSize.Y > .1) cameraSize -= 2 * Vector2.UnitY * Time.ElapsedGameTime;
