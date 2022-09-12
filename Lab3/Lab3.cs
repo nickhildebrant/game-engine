@@ -167,13 +167,14 @@ namespace CPI311.Labs
             _spriteBatch.DrawString(font, "SHIFT + Up/Down: Scale Model", new Vector2(5, 230), Color.Black);
 
             // displaying the camera's center position and size
-            _spriteBatch.DrawString(font, "Camera Center: (" + cameraCenter.X.ToString("0.00") + ", " + cameraCenter.Y.ToString("0.00") + ")", new Vector2(550, 10), Color.Black);
-            _spriteBatch.DrawString(font, "Camera Width/Height: (" + cameraSize.X.ToString("0.00") + ", " + cameraSize.Y.ToString("0.00") + ")", new Vector2(550, 30), Color.Black);
+            _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ")", new Vector2(550, 10), Color.Black);
+            _spriteBatch.DrawString(font, "Camera Center: (" + cameraCenter.X.ToString("0.00") + ", " + cameraCenter.Y.ToString("0.00") + ")", new Vector2(550, 30), Color.Black);
+            _spriteBatch.DrawString(font, "Camera Width/Height: (" + cameraSize.X.ToString("0.00") + ", " + cameraSize.Y.ToString("0.00") + ")", new Vector2(550, 50), Color.Black);
 
             // displaying the model's position and rotation
-            _spriteBatch.DrawString(font, "Model Position: (" + modelPosition.X.ToString("0.00") + ", " + modelPosition.Y.ToString("0.00") + ")", new Vector2(550, 70), Color.Black);
-            _spriteBatch.DrawString(font, "Model Rotation: (" + yaw.ToString("0.00") + ", " + pitch.ToString("0.00") + ", " + roll.ToString("0.00") + ")", new Vector2(550, 90), Color.Black);
-            _spriteBatch.DrawString(font, "Model Scale: (" + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ")", new Vector2(550, 110), Color.Black);
+            _spriteBatch.DrawString(font, "Model Position: (" + modelPosition.X.ToString("0.00") + ", " + modelPosition.Y.ToString("0.00") + ")", new Vector2(550, 90), Color.Black);
+            _spriteBatch.DrawString(font, "Model Rotation: (" + yaw.ToString("0.00") + ", " + pitch.ToString("0.00") + ", " + roll.ToString("0.00") + ")", new Vector2(550, 110), Color.Black);
+            _spriteBatch.DrawString(font, "Model Scale: (" + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ")", new Vector2(550, 130), Color.Black);
 
             _spriteBatch.End();
 
