@@ -15,6 +15,7 @@ namespace CPI311.Labs
         // *** Lab3
         Model model;
         float modelScale = 1.0f;
+        float yaw = 0, pitch = 0, roll = 0;
         Vector3 modelPosition = new Vector3(0, 0, 0);
 
         SpriteFont font;
@@ -25,7 +26,7 @@ namespace CPI311.Labs
         // *** Matrix for 3D
         Matrix world;
         Matrix view;
-        Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1.33f, 0.01f, 1000f);
+        Matrix projection;
 
         // *** Camera Data
         Vector3 cameraPosition = new Vector3(0, 0, 5);
@@ -72,11 +73,25 @@ namespace CPI311.Labs
             Time.Update(gameTime);
 
             // If the shift key is held down
-            if(InputManager.IsKeyDown(Keys.LeftShift))
+            if(InputManager.IsKeyDown(Keys.LeftShift) || InputManager.IsKeyDown(Keys.RightShift))
             {
                 // Change scale of the model with Shift+UP/DOWN
                 if (InputManager.IsKeyDown(Keys.Up)) modelScale += 5 * Time.ElapsedGameTime;
                 if (InputManager.IsKeyDown(Keys.Down) && modelScale > 0) modelScale -= 5 * Time.ElapsedGameTime;
+
+                // Move camera with WASD in 3D world
+                if (InputManager.IsKeyDown(Keys.W)) cameraPosition += 5 * Vector3.Up * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.A)) cameraPosition += 5 * Vector3.Left * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.S)) cameraPosition += 5 * Vector3.Down * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.D)) cameraPosition += 5 * Vector3.Right * Time.ElapsedGameTime;
+            }
+            else if(InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.LeftControl))
+            {
+                // Move camera with WASD in 3D world
+                if (InputManager.IsKeyDown(Keys.W)) cameraPosition += 5 * Vector3.Up * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.A)) cameraPosition += 5 * Vector3.Left * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.S)) cameraPosition += 5 * Vector3.Down * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.D)) cameraPosition += 5 * Vector3.Right * Time.ElapsedGameTime;
             }
             else // The shift key is not being held down
             {
@@ -91,6 +106,18 @@ namespace CPI311.Labs
                 if (InputManager.IsKeyDown(Keys.Down)) modelPosition += 5 * Vector3.Down * Time.ElapsedGameTime;
                 if (InputManager.IsKeyDown(Keys.Left)) modelPosition += 5 * Vector3.Left * Time.ElapsedGameTime;
                 if (InputManager.IsKeyDown(Keys.Right)) modelPosition += 5 * Vector3.Right * Time.ElapsedGameTime;
+
+                // Changing the model yaw with Insert/Delete
+                if (InputManager.IsKeyDown(Keys.Insert)) yaw += 5 * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.Delete)) yaw -= 5 * Time.ElapsedGameTime;
+
+                // Changing the model pitch with Home/End
+                if (InputManager.IsKeyDown(Keys.Home)) pitch += 5 * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.End)) pitch -= 5 * Time.ElapsedGameTime;
+
+                // Changing the model roll with PageUp/PageDown
+                if (InputManager.IsKeyDown(Keys.PageUp)) roll += 5 * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.PageDown)) roll -= 5 * Time.ElapsedGameTime;
             }
 
             // Tab changes the camera mode
@@ -102,8 +129,8 @@ namespace CPI311.Labs
             if (cameraMode) projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1.33f, 0.01f, 1000f);
             else projection = Matrix.CreateOrthographic(MathHelper.PiOver2, 1.33f, 0.01f, 1000f);
 
-            if(orderToggle) world = Matrix.CreateScale(modelScale) * Matrix.CreateFromYawPitchRoll(0, 0, 0) * Matrix.CreateTranslation(modelPosition); // scale * rot * trans
-            else world = Matrix.CreateTranslation(modelPosition) * Matrix.CreateFromYawPitchRoll(0, 0, 0) * Matrix.CreateScale(modelScale);            // trans * rot * scal
+            if(orderToggle) world = Matrix.CreateScale(modelScale) * Matrix.CreateFromYawPitchRoll(yaw, pitch, roll) * Matrix.CreateTranslation(modelPosition); // scale * rot * trans
+            else world = Matrix.CreateTranslation(modelPosition) * Matrix.CreateFromYawPitchRoll(yaw, pitch, roll) * Matrix.CreateScale(modelScale);            // trans * rot * scal
 
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(0, 0, -1), new Vector3(0, 1, 0));
 
@@ -124,15 +151,23 @@ namespace CPI311.Labs
             else _spriteBatch.DrawString(font, "SPACE: World = Translation * Rotation * Scale", new Vector2(5, 10), Color.Black);
 
             // printing camera mode
-            if(cameraMode) _spriteBatch.DrawString(font, "TAB: Current Camera Mode: Perspective", new Vector2(5, 30), Color.Black);
-            else _spriteBatch.DrawString(font, "TAB: Current Camera Mode: Orthographic", new Vector2(5, 30), Color.Black);
+            if(cameraMode) _spriteBatch.DrawString(font, "TAB: Current Camera Mode - Perspective", new Vector2(5, 30), Color.Black);
+            else _spriteBatch.DrawString(font, "TAB: Current Camera Mode - Orthographic", new Vector2(5, 30), Color.Black);
 
-            // Movement
+            // camera movement
             _spriteBatch.DrawString(font, "WASD Keys: Move Camera", new Vector2(5, 50), Color.Black);
 
-            _spriteBatch.DrawString(font, "Arrow Keys: Move Model", new Vector2(5, 130), Color.Black);
-            _spriteBatch.DrawString(font, "Model Position: (" + modelPosition.X + ", " + modelPosition.Y + ")", new Vector2(5, 150), Color.Black);
+            // model movement
+            _spriteBatch.DrawString(font, "Arrow Keys: Move Model", new Vector2(5, 90), Color.Black);
+            _spriteBatch.DrawString(font, "Insert/Delete: Model Yaw", new Vector2(5, 110), Color.Black);
+            _spriteBatch.DrawString(font, "Home/End: Model Pitch", new Vector2(5, 130), Color.Black);
+            _spriteBatch.DrawString(font, "PageUp/PageDown: Model Roll", new Vector2(5, 150), Color.Black);
             _spriteBatch.DrawString(font, "Shift + Up/Down: Scale Model", new Vector2(5, 170), Color.Black);
+
+            // displaying the model's position and rotation
+            _spriteBatch.DrawString(font, "Model Position: (" + modelPosition.X.ToString("0.00") + ", " + modelPosition.Y.ToString("0.00") + ")", new Vector2(550, 10), Color.Black);
+            _spriteBatch.DrawString(font, "Model Rotation: (" + yaw.ToString("0.00") + ", " + pitch.ToString("0.00") + ", " + roll.ToString("0.00") + ")", new Vector2(550, 30), Color.Black);
+            _spriteBatch.DrawString(font, "Model Scale: (" + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ", " + modelScale.ToString("0.00") + ")", new Vector2(550, 50), Color.Black);
 
             _spriteBatch.End();
 
