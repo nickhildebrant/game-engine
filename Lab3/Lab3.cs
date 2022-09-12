@@ -76,7 +76,7 @@ namespace CPI311.Labs
             {
                 // Change scale of the model with Shift+UP/DOWN
                 if (InputManager.IsKeyDown(Keys.Up)) modelScale += 5 * Time.ElapsedGameTime;
-                if (InputManager.IsKeyDown(Keys.Down)) modelScale -= 5 * Time.ElapsedGameTime;
+                if (InputManager.IsKeyDown(Keys.Down) && modelScale > 0) modelScale -= 5 * Time.ElapsedGameTime;
             }
             else // The shift key is not being held down
             {
