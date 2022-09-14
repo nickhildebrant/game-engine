@@ -94,8 +94,8 @@ namespace CPI311.Labs
             if (InputManager.IsKeyDown(Keys.Right)) parentTransform.LocalPosition += cameraTransform.Right * Time.ElapsedGameTime * 5;
 
             // Controls child rotation
-            if (InputManager.IsKeyDown(Keys.Z)) parentTransform.Rotate(cameraTransform.Up, Time.ElapsedGameTime * 5);
-            if (InputManager.IsKeyDown(Keys.X)) parentTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime * 5);
+            if (InputManager.IsKeyDown(Keys.X)) parentTransform.Rotate(cameraTransform.Up, Time.ElapsedGameTime * 5);
+            if (InputManager.IsKeyDown(Keys.Z)) parentTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime * 5);
 
             base.Update(gameTime);
         }
