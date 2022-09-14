@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CPI311.GameEngine;
-using SharpDX.Direct3D9;
 
 namespace CPI311.Labs
 {
