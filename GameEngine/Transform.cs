@@ -1,14 +1,40 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace CPI311.GameEngine
 {
     public class Transform
     {
+        // *** Uodate Lab4-C
+        private Transform parent;
+
         // SRT - Scale * Rotation * Transform
         private Vector3 localScale;
         private Quaternion localRotation;
         private Vector3 localPosition;
         private Matrix world;
+        
+        // Children property
+        private List<Transform> Children { get; set; }
+
+        // Parent property
+        public Transform Parent
+        {
+            get { return parent; }
+            set
+            {
+                if (parent != null) parent.Children.Remove(this);
+                parent = value;
+
+                if (parent != null) parent.Children.Add(this);
+                UpdateWorld();
+            }
+        }
+
+        public Vector3 Position
+        {
+            get { return World.Translation; }
+        }
 
         public Vector3 LocalPosition
         {
@@ -41,15 +67,22 @@ namespace CPI311.GameEngine
         // *** Constructor
         public Transform()
         {
+            Children = new List<Transform>();
+
             localScale = Vector3.One;
             localRotation = Quaternion.Identity;
             localPosition = Vector3.Zero;
+
             UpdateWorld();
         }
 
         private void UpdateWorld()
         {
             world = Matrix.CreateScale(localScale) * Matrix.CreateFromQuaternion(localRotation) * Matrix.CreateTranslation(localPosition);
+
+            if(parent != null) world *= parent.World;
+
+            foreach (Transform child in Children) child.UpdateWorld();
         }
 
         // *** Rotate Method

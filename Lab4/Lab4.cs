@@ -15,6 +15,10 @@ namespace CPI311.Labs
         Model model;
         Transform modelTransform;
 
+        // *** Last part of Lab4
+        Model parentModel;
+        Transform parentTransform;
+
         Camera camera;
         Transform cameraTransform;
         // *************************
@@ -37,8 +41,12 @@ namespace CPI311.Labs
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            parentModel = Content.Load<Model>("Sphere");
+            parentTransform = new Transform();
+
             model = Content.Load<Model>("Torus");
             modelTransform = new Transform();
+            modelTransform.Parent = parentTransform;
 
             camera = new Camera();
             cameraTransform = new Transform();
@@ -47,11 +55,22 @@ namespace CPI311.Labs
 
             // ************* Add lighting *******************
             foreach (ModelMesh mesh in model.Meshes)
+            {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
                     effect.PreferPerPixelLighting = true;
                 }
+            }
+
+            foreach (ModelMesh mesh in parentModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                }
+            }
             // **********************************************
         }
 
@@ -67,8 +86,13 @@ namespace CPI311.Labs
             if (InputManager.IsKeyDown(Keys.S)) cameraTransform.LocalPosition += cameraTransform.Backward * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.D)) cameraTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime);
 
-            if (InputManager.IsKeyDown(Keys.Up)) cameraTransform.LocalPosition += cameraTransform.Up * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Down)) cameraTransform.LocalPosition += cameraTransform.Down * Time.ElapsedGameTime;
+            // *** Last part of Lab4
+            if (InputManager.IsKeyDown(Keys.Up)) parentTransform.LocalPosition += cameraTransform.Up * Time.ElapsedGameTime * 5;
+            if (InputManager.IsKeyDown(Keys.Down)) parentTransform.LocalPosition += cameraTransform.Down * Time.ElapsedGameTime * 5;
+            if (InputManager.IsKeyDown(Keys.Left)) parentTransform.LocalPosition += cameraTransform.Left * Time.ElapsedGameTime * 5;
+            if (InputManager.IsKeyDown(Keys.Right)) parentTransform.LocalPosition += cameraTransform.Right * Time.ElapsedGameTime * 5;
+
+            modelTransform.Rotate(cameraTransform.Up, Time.ElapsedGameTime * 5);
 
             base.Update(gameTime);
         }
@@ -78,6 +102,7 @@ namespace CPI311.Labs
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             model.Draw(modelTransform.World, camera.View, camera.Projection);
+            parentModel.Draw(parentTransform.World, camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }
