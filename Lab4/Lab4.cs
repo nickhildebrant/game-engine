@@ -47,6 +47,7 @@ namespace CPI311.Labs
             model = Content.Load<Model>("Torus");
             modelTransform = new Transform();
             modelTransform.Parent = parentTransform;
+            modelTransform.LocalPosition = Vector3.Forward * 2;
 
             camera = new Camera();
             cameraTransform = new Transform();
@@ -86,13 +87,15 @@ namespace CPI311.Labs
             if (InputManager.IsKeyDown(Keys.S)) cameraTransform.LocalPosition += cameraTransform.Backward * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.D)) cameraTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime);
 
-            // *** Last part of Lab4
+            // Controls parent movement
             if (InputManager.IsKeyDown(Keys.Up)) parentTransform.LocalPosition += cameraTransform.Up * Time.ElapsedGameTime * 5;
             if (InputManager.IsKeyDown(Keys.Down)) parentTransform.LocalPosition += cameraTransform.Down * Time.ElapsedGameTime * 5;
             if (InputManager.IsKeyDown(Keys.Left)) parentTransform.LocalPosition += cameraTransform.Left * Time.ElapsedGameTime * 5;
             if (InputManager.IsKeyDown(Keys.Right)) parentTransform.LocalPosition += cameraTransform.Right * Time.ElapsedGameTime * 5;
 
-            modelTransform.Rotate(cameraTransform.Up, Time.ElapsedGameTime * 5);
+            // Controls child rotation
+            if (InputManager.IsKeyDown(Keys.Z)) parentTransform.Rotate(cameraTransform.Up, Time.ElapsedGameTime * 5);
+            if (InputManager.IsKeyDown(Keys.X)) parentTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime * 5);
 
             base.Update(gameTime);
         }
