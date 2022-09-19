@@ -38,6 +38,8 @@ namespace Assignment1
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             characterSprite = new AnimatedSprite(Content.Load<Texture2D>("explorer"), 8);
+            characterSprite.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+            characterSprite.Source = new Rectangle(0, 32, 32, 32);
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,10 +50,37 @@ namespace Assignment1
             InputManager.Update();
             Time.Update(gameTime);
 
-            if (InputManager.IsKeyDown(Keys.Up)) characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Down)) characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Left)) characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.Right)) characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
+            // Character moving up
+            if (InputManager.IsKeyDown(Keys.Up))
+            {
+                characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                characterSprite.Source = new Rectangle(0, 0, 32, 32);
+                characterSprite.Update();
+            }
+
+            // Character moving down
+            if (InputManager.IsKeyDown(Keys.Down))
+            {
+                characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                characterSprite.Source = new Rectangle(0, 32, 32, 32);
+                characterSprite.Update();
+            }
+
+            // Character moving left
+            if (InputManager.IsKeyDown(Keys.Left))
+            {
+                characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                characterSprite.Source = new Rectangle(0, 64, 32, 32);
+                characterSprite.Update();
+            }
+
+            // Character moving right
+            if (InputManager.IsKeyDown(Keys.Right))
+            {
+                characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                characterSprite.Source = new Rectangle(0, 96, 32, 32);
+                characterSprite.Update();
+            }
 
             base.Update(gameTime);
         }
