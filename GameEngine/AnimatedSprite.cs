@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -21,9 +22,10 @@ namespace CPI311.GameEngine
         {
             Frame += Speed * Time.ElapsedGameTime;
 
-            if (Frame >= Frames) Frame = 0;
+            if (Frame >= Frames-1) Frame = 1;
 
             int frameNum = (int)Math.Ceiling((double)Frame);
+            Debug.WriteLine(frameNum);
             Source = new Rectangle(frameNum * 32, Source.Y, 32, 32);
         }
 
