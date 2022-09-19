@@ -16,6 +16,9 @@ namespace CPI311.GameEngine
             Frames = frames;
             Frame = 0;
             Speed = 5;
+
+            Source = new Rectangle(0, 0, 32, 32);
+            Origin = new Vector2(Source.Width / 2, Source.Height / 2);
         }
 
         public override void Update()
@@ -25,7 +28,6 @@ namespace CPI311.GameEngine
             if (Frame >= Frames-1) Frame = 1;
 
             int frameNum = (int)Math.Ceiling((double)Frame);
-            Debug.WriteLine(frameNum);
             Source = new Rectangle(frameNum * 32, Source.Y, 32, 32);
         }
 
