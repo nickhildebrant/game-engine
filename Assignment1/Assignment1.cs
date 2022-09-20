@@ -67,11 +67,6 @@ namespace Assignment1
             distanceBar.Position = new Vector2(300, 25);
         }
 
-        public void RotateSprite()
-        {
-
-        }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -84,10 +79,10 @@ namespace Assignment1
 
             if (InputManager.IsKeyPressed(Keys.F)) distanceBar.Value = 28;
 
-            // Collecting the bonus subtracts 2.3 seconds
+            // Collecting the bonus subtracts 2.5 seconds
             if (Vector2.Distance(characterSprite.Position, bonusSprite.Position) < characterSprite.Source.Width)
             {
-                timeBar.Value -= 2.3f;
+                timeBar.Value -= 2.5f;
                 bonusSprite.Position = new Vector2(random.Next(bonusSprite.Texture.Width, GraphicsDevice.Viewport.Width - bonusSprite.Texture.Width),
                                                     random.Next(bonusSprite.Texture.Height, GraphicsDevice.Viewport.Height - bonusSprite.Texture.Height));
                 bonusSprite.Update();
@@ -97,28 +92,28 @@ namespace Assignment1
             if (InputManager.IsMouseLeftClicked())
             {
                 destination = InputManager.GetMousePosition();
-                RotateSprite();
                 isThere = false;
             }
 
             if (Vector2.Distance(characterSprite.Position, destination) < 1.5f) isThere = true;
 
-            if (!isThere)
+            if (!isThere && distanceBar.Value <= 31 && timeBar.Value <= 31)
             {
                 // Move X first
-                if (characterSprite.Position.X > destination.X) characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
-                if (characterSprite.Position.X < destination.X) characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                if (characterSprite.Position.X > destination.X) { direction = 2; characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime; }
+                if (characterSprite.Position.X < destination.X) { direction = 0; characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime; }
 
                 // When the x matches, then move Y
                 if(Math.Abs(characterSprite.Position.X - destination.X) < 1.5f)
                 {
-                    if (characterSprite.Position.Y > destination.Y) characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
-                    if (characterSprite.Position.Y < destination.Y) characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                    if (characterSprite.Position.Y > destination.Y) { direction = 3; characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime; }
+                    if (characterSprite.Position.Y < destination.Y) { direction = 1; characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime; }
                 }
 
                 distanceBar.Value += 0.5f * Time.ElapsedGameTime;
                 distanceBar.Update();
 
+                characterSprite.Source = new Rectangle(0, direction * 32, 32, 32);
                 characterSprite.Update();
             }
 
@@ -175,9 +170,9 @@ namespace Assignment1
                     _spriteBatch.DrawString(font, "Time Remaining", new Vector2(110, 20), Color.Black);
                     _spriteBatch.DrawString(font, "Distance Traveled", new Vector2(360, 20), Color.Black);
                 }
-                else _spriteBatch.DrawString(font, "Game Over, Time is Up! Exit or press the escape key.", new Vector2(200, 240), Color.White);
+                else _spriteBatch.DrawString(font, "Game Over, Time is Up! Exit or press the escape key.", new Vector2(200, 240), Color.Black);
             }
-            else _spriteBatch.DrawString(font, "Game Over, you walked enough distance! Exit or press the escape key.", new Vector2(150, 240), Color.White);
+            else _spriteBatch.DrawString(font, "Game Over, you walked enough distance! Exit or press the escape key.", new Vector2(150, 240), Color.Black);
 
             _spriteBatch.End();
 
