@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CPI311.GameEngine;
-using System.Diagnostics;
 
 namespace Assignment1
 {
@@ -68,6 +67,11 @@ namespace Assignment1
             distanceBar.Position = new Vector2(300, 25);
         }
 
+        public void RotateSprite()
+        {
+
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -93,6 +97,7 @@ namespace Assignment1
             if (InputManager.IsMouseLeftClicked())
             {
                 destination = InputManager.GetMousePosition();
+                RotateSprite();
                 isThere = false;
             }
 
@@ -149,11 +154,6 @@ namespace Assignment1
             }
 
             base.Update(gameTime);
-        }
-
-        public void MoveSprite()
-        {
-
         }
 
         protected override void Draw(GameTime gameTime)
