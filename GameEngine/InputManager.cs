@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace CPI311.GameEngine
@@ -32,7 +33,20 @@ namespace CPI311.GameEngine
         public static bool IsKeyPressed(Keys key)
         {
             return CurrentKeyboardState.IsKeyDown(key) &&
-            PreviousKeyboardState.IsKeyUp(key);
+                PreviousKeyboardState.IsKeyUp(key);
         }
+
+        public static bool IsMouseLeftClicked()
+        { 
+            return CurrentMouseState.LeftButton == ButtonState.Pressed
+                && PreviousMouseState.LeftButton != ButtonState.Pressed; 
+        }
+
+        public static bool IsMouseLeftDown()
+        {
+            return CurrentMouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        public static Vector2 GetMousePosition() { return new Vector2(CurrentMouseState.X, CurrentMouseState.Y); }
     }
 }

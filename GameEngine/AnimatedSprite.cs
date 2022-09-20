@@ -15,7 +15,7 @@ namespace CPI311.GameEngine
         {
             Frames = frames;
             Frame = 0;
-            Speed = 5;
+            Speed = 6;
 
             Source = new Rectangle(0, 0, 32, 32);
             Origin = new Vector2(Source.Width / 2, Source.Height / 2);

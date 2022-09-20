@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CPI311.GameEngine;
-using System.Net.Mime;
+using System.Diagnostics;
 
 namespace Assignment1
 {
@@ -14,11 +14,17 @@ namespace Assignment1
         private SpriteBatch _spriteBatch;
 
         // *** Assignment 1
+        int direction = 1;
         AnimatedSprite characterSprite;
         Sprite bonusSprite;
+        SpriteFont font;
 
         ProgressBar timeBar;
         ProgressBar distanceBar;
+
+        // for mouse movement
+        bool isThere = true;
+        Vector2 destination;
 
         Random random = new Random();
 
@@ -41,6 +47,8 @@ namespace Assignment1
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            font = Content.Load<SpriteFont>("font");
+
             characterSprite = new AnimatedSprite(Content.Load<Texture2D>("explorer"), 8);
             characterSprite.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             characterSprite.Source = new Rectangle(0, 32, 32, 32);
@@ -54,8 +62,10 @@ namespace Assignment1
             timeBar.Scale = new Vector2(3.0f, 1.0f);
             timeBar.Position = new Vector2(50, 25);
 
-            //distanceBar = new ProgressBar(Content.Load<Texture2D>("Square"));
-            //distanceBar.Position = new Vector2(70, 20);
+            distanceBar = new ProgressBar(Content.Load<Texture2D>("Square"));
+            distanceBar.FillColor = Color.Green;
+            distanceBar.Scale = new Vector2(3.0f, 1.0f);
+            distanceBar.Position = new Vector2(300, 25);
         }
 
         protected override void Update(GameTime gameTime)
@@ -68,47 +78,82 @@ namespace Assignment1
 
             timeBar.Value += Time.ElapsedGameTime;
 
-            if(Vector2.Distance(characterSprite.Position, bonusSprite.Position) < characterSprite.Source.Width)
+            if (InputManager.IsKeyPressed(Keys.F)) distanceBar.Value = 28;
+
+            // Collecting the bonus subtracts 2.3 seconds
+            if (Vector2.Distance(characterSprite.Position, bonusSprite.Position) < characterSprite.Source.Width)
             {
-                timeBar.Value -= 2;
-                bonusSprite.Position = new Vector2(random.Next(bonusSprite.Texture.Width, GraphicsDevice.Viewport.Width - bonusSprite.Texture.Width), 
-                                                   random.Next(bonusSprite.Texture.Height, GraphicsDevice.Viewport.Height - bonusSprite.Texture.Height));
+                timeBar.Value -= 2.3f;
+                bonusSprite.Position = new Vector2(random.Next(bonusSprite.Texture.Width, GraphicsDevice.Viewport.Width - bonusSprite.Texture.Width),
+                                                    random.Next(bonusSprite.Texture.Height, GraphicsDevice.Viewport.Height - bonusSprite.Texture.Height));
                 bonusSprite.Update();
+            }
+
+            // When the mouse is clicked
+            if (InputManager.IsMouseLeftClicked())
+            {
+                destination = InputManager.GetMousePosition();
+                isThere = false;
+            }
+
+            if (Vector2.Distance(characterSprite.Position, destination) < 1.5f) isThere = true;
+
+            if (!isThere)
+            {
+                // Move X first
+                if (characterSprite.Position.X > destination.X) characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                if (characterSprite.Position.X < destination.X) characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
+
+                // When the x matches, then move Y
+                if(Math.Abs(characterSprite.Position.X - destination.X) < 1.5f)
+                {
+                    if (characterSprite.Position.Y > destination.Y) characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                    if (characterSprite.Position.Y < destination.Y) characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                }
+
+                distanceBar.Value += 0.5f * Time.ElapsedGameTime;
+                distanceBar.Update();
+
+                characterSprite.Update();
             }
 
             // Character moving up
             if (InputManager.IsKeyDown(Keys.Up))
             {
-                characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
-                characterSprite.Source = new Rectangle(0, 128, 32, 32);
+                if(direction == 0) characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                if(direction == 1) characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
+                if(direction == 2) characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
+                if(direction == 3) characterSprite.Position -= 100 * Vector2.UnitY * Time.ElapsedGameTime;
                 characterSprite.Update();
-            }
 
-            // Character moving down
-            if (InputManager.IsKeyDown(Keys.Down))
-            {
-                characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime;
-                characterSprite.Source = new Rectangle(0, 32, 32, 32);
-                characterSprite.Update();
+                distanceBar.Value += 0.5f * Time.ElapsedGameTime;
+                distanceBar.Update();
             }
 
             // Character moving left
-            if (InputManager.IsKeyDown(Keys.Left))
+            if (InputManager.IsKeyPressed(Keys.Left))
             {
-                characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime;
-                characterSprite.Source = new Rectangle(0, 64, 32, 32);
+                if (direction > 0) direction--;
+                else direction = 3;
+                characterSprite.Source = new Rectangle(0, direction * 32, 32, 32);
                 characterSprite.Update();
             }
 
             // Character moving right
-            if (InputManager.IsKeyDown(Keys.Right))
+            if (InputManager.IsKeyPressed(Keys.Right))
             {
-                characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime;
-                characterSprite.Source = new Rectangle(0, 96, 32, 32);
+                if (direction < 3) direction++;
+                else direction = 0;
+                characterSprite.Source = new Rectangle(0, direction * 32, 32, 32);
                 characterSprite.Update();
             }
 
             base.Update(gameTime);
+        }
+
+        public void MoveSprite()
+        {
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -117,11 +162,22 @@ namespace Assignment1
 
             _spriteBatch.Begin();
 
-            bonusSprite.Draw(_spriteBatch);
-            characterSprite.Draw(_spriteBatch);
+            if (distanceBar.Value <= 31)
+            {
+                if(timeBar.Value <= 31)
+                {
+                    bonusSprite.Draw(_spriteBatch);
+                    characterSprite.Draw(_spriteBatch);
 
-            timeBar.Draw(_spriteBatch);
-            //distanceBar.Draw(_spriteBatch);
+                    timeBar.Draw(_spriteBatch);
+                    distanceBar.Draw(_spriteBatch);
+
+                    _spriteBatch.DrawString(font, "Time Remaining", new Vector2(110, 20), Color.Black);
+                    _spriteBatch.DrawString(font, "Distance Traveled", new Vector2(360, 20), Color.Black);
+                }
+                else _spriteBatch.DrawString(font, "Game Over, Time is Up! Exit or press the escape key.", new Vector2(200, 240), Color.White);
+            }
+            else _spriteBatch.DrawString(font, "Game Over, you walked enough distance! Exit or press the escape key.", new Vector2(150, 240), Color.White);
 
             _spriteBatch.End();
 
