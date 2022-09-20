@@ -99,7 +99,11 @@ namespace Assignment1
 
             if (!isThere && distanceBar.Value <= 31 && timeBar.Value <= 31)
             {
-                // Move X first
+                direction = 1;
+                characterSprite.Source = new Rectangle(0, direction * 32, 32, 32);
+                characterSprite.Update();
+
+                // move x first
                 if (characterSprite.Position.X > destination.X) { direction = 2; characterSprite.Position -= 100 * Vector2.UnitX * Time.ElapsedGameTime; }
                 if (characterSprite.Position.X < destination.X) { direction = 0; characterSprite.Position += 100 * Vector2.UnitX * Time.ElapsedGameTime; }
 
@@ -110,7 +114,7 @@ namespace Assignment1
                     if (characterSprite.Position.Y < destination.Y) { direction = 1; characterSprite.Position += 100 * Vector2.UnitY * Time.ElapsedGameTime; }
                 }
 
-                distanceBar.Value += 0.5f * Time.ElapsedGameTime;
+                distanceBar.Value += 0.7f * Time.ElapsedGameTime;
                 distanceBar.Update();
 
                 characterSprite.Source = new Rectangle(0, direction * 32, 32, 32);
