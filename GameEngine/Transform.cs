@@ -91,5 +91,26 @@ namespace CPI311.GameEngine
             localRotation *= Quaternion.CreateFromAxisAngle(axis, angle);
             UpdateWorld();
         }
+
+        public Quaternion Rotation
+        {
+            get { return Quaternion.CreateFromRotationMatrix(World); }
+            set
+            {
+                if (Parent == null) LocalRotation = value;
+                else
+                {
+                    Vector3 scale, pos; Quaternion rot;
+                    world.Decompose(out scale, out rot, out pos);
+                    Matrix total = Matrix.CreateScale(scale) *
+                          Matrix.CreateFromQuaternion(value) *
+                          Matrix.CreateTranslation(pos);
+                    LocalRotation = Quaternion.CreateFromRotationMatrix(
+                         Matrix.Invert(Matrix.CreateScale(LocalScale)) * total *
+                         Matrix.Invert(Matrix.CreateTranslation(LocalPosition)
+                         * Parent.world));
+                }
+            }
+        }
     }
 }
