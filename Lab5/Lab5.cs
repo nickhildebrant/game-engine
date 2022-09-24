@@ -19,6 +19,9 @@ namespace CPI311.Labs
         Camera camera;
         Transform cameraTransform;
 
+        SpriteFont font;
+        int shadingTechnique = 0;
+
         public Lab5()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -38,10 +41,15 @@ namespace CPI311.Labs
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = Content.Load<SpriteFont>("font");
 
             model = Content.Load<Model>("Torus");
             modelTransform = new Transform();
             effect = Content.Load<Effect>("SimpleShading");
+
+            foreach (ModelMesh mesh in model.Meshes)
+                foreach (BasicEffect effect in mesh.Effects)
+                    effect.EnableDefaultLighting();
 
             camera = new Camera();
             cameraTransform = new Transform();
@@ -62,9 +70,17 @@ namespace CPI311.Labs
             if (InputManager.IsKeyDown(Keys.S)) cameraTransform.LocalPosition += cameraTransform.Backward * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.D)) cameraTransform.Rotate(cameraTransform.Down, Time.ElapsedGameTime);
 
+            // Changes the shading technique
+            if(InputManager.IsKeyPressed(Keys.Tab))
+            {
+                if (shadingTechnique == 3) shadingTechnique = 0;
+                else shadingTechnique++;
+            }
+
             base.Update(gameTime);
         }
 
+        [System.Obsolete]
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -72,13 +88,13 @@ namespace CPI311.Labs
             Matrix view = camera.View;
             Matrix projection = camera.Projection;
 
-            effect.CurrentTechnique = effect.Techniques[0]; //"0" is the first technique
+            effect.CurrentTechnique = effect.Techniques[shadingTechnique]; //"0" is the first technique
             effect.Parameters["World"].SetValue(modelTransform.World);
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
             effect.Parameters["LightPosition"].SetValue(Vector3.Backward * 10 + Vector3.Right * 5);
             effect.Parameters["CameraPosition"].SetValue(cameraTransform.Position);
-            effect.Parameters["Shininess"].SetValue(20f);
+            effect.Parameters["Shininess"].SetValue(2f);
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.2f, 0.2f, 0.2f));
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(0.5f, 0, 0));
             effect.Parameters["SpecularColor"].SetValue(new Vector3(0, 0, 0.5f));
@@ -92,9 +108,30 @@ namespace CPI311.Labs
                     {
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
                         GraphicsDevice.Indices = part.IndexBuffer;
-                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, 0, part.PrimitiveCount);
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, 0, part.NumVertices, part.StartIndex, part.PrimitiveCount);
                     }
             }
+
+            _spriteBatch.Begin();
+            switch (shadingTechnique)
+            {
+                case 0:
+                    _spriteBatch.DrawString(font, "TAB: Technique = Gouraud", new Vector2(5, 10), Color.Black);
+                    break;
+
+                case 1:
+                    _spriteBatch.DrawString(font, "TAB: Technique = Phong", new Vector2(5, 10), Color.Black);
+                    break;
+
+                case 2:
+                    _spriteBatch.DrawString(font, "TAB: Technique = Phong-Blinn", new Vector2(5, 10), Color.Black);
+                    break;
+
+                case 3:
+                    _spriteBatch.DrawString(font, "TAB: Technique = Schlick", new Vector2(5, 10), Color.Black);
+                    break;
+            }
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

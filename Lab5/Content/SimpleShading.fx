@@ -96,7 +96,33 @@ float4 PhongPixel(PhongVertexOutput input) : COLOR0
 	float specular = pow(max(dot(reflectDirection, viewDirection), 0), Shininess);
 	return float4(AmbientColor + diffuse * DiffuseColor + specular * SpecularColor, 1);
 }
-
+float4 PhongBlinnPixel(PhongVertexOutput input) : COLOR0
+{
+	// The lighting operation, same as in the Gouraud vertex method
+	float3 lightDirection = normalize(LightPosition - input.WorldPosition.xyz);
+	float3 viewDirection = normalize(CameraPosition - input.WorldPosition.xyz);
+	// Need to normalize my incoming normal, length could be less than 1
+	input.WorldNormal = normalize(input.WorldNormal);
+	float3 reflectDirection = -reflect(lightDirection, input.WorldNormal);
+	// Now, compute the lighint components
+	float diffuse = max(dot(lightDirection, input.WorldNormal), 0) * tex2D(DiffuseSampler, input.UV);
+	float specular = pow(max(dot((lightDirection + viewDirection), input.WorldNormal), 0), Shininess);
+	return float4(AmbientColor + diffuse * DiffuseColor + specular * SpecularColor, 1);
+}
+float4 SchlickPixel(PhongVertexOutput input) : COLOR0
+{
+	// The lighting operation, same as in the Gouraud vertex method
+	float3 lightDirection = normalize(LightPosition - input.WorldPosition.xyz);
+	float3 viewDirection = normalize(CameraPosition - input.WorldPosition.xyz);
+	// Need to normalize my incoming normal, length could be less than 1
+	input.WorldNormal = normalize(input.WorldNormal);
+	float3 reflectDirection = -reflect(lightDirection, input.WorldNormal);
+	// Now, compute the lighint components
+	float diffuse = max(dot(lightDirection, input.WorldNormal), 0) * tex2D(DiffuseSampler, input.UV);
+	float t = dot(reflectDirection, viewDirection);
+	float specular = t / (Shininess + t - t * Shininess);
+	return float4(AmbientColor + diffuse * DiffuseColor + specular * SpecularColor, 1);
+}
 // Now the different techniques
 technique Gouraud
 {
@@ -112,5 +138,21 @@ technique Phong
 	{
 		VertexShader = compile vs_4_0 PhongVertex();
 		PixelShader = compile ps_4_0 PhongPixel();
+	}
+}
+technique PhongBlinn
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 PhongBlinnPixel();
+	}
+}
+technique Schlick
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 SchlickPixel();
 	}
 }
