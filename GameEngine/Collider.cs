@@ -2,7 +2,7 @@
 
 namespace CPI311.GameEngine
 {
-    public class Collider
+    public class Collider : Component
     {
         public virtual bool Collides(Collider other, out Vector3 normal)
         {

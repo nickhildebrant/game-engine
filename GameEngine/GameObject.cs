@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace CPI311.GameEngine
@@ -24,6 +25,10 @@ namespace CPI311.GameEngine
             Renderables = new List<IRenderable> { };
             Drawables = new List<IDrawable> { };
         }
+
+        public void Update() { foreach (IUpdateable component in Updateables) component.Update(); }
+        public void Draw() { foreach (IRenderable component in Renderables) component.Draw(); }
+        public void Draw(SpriteBatch spritebatch) { foreach(IDrawable component in Drawables) component.Draw(spritebatch); }
 
         public T Add<T>() where T : Component, new()
         {

@@ -2,10 +2,9 @@
 
 namespace CPI311.GameEngine
 {
-    public class Camera
+    public class Camera : Component
     {
-        public Transform Transform { get; set; }
-
+        // public Transform Transform { get; set; } conflict from component class
         public float FieldOfView { get; set; }
         public float AspectRatio { get; set; }
         public float NearPlane { get; set; }
