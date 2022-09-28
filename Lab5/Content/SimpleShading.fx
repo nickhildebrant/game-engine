@@ -106,7 +106,7 @@ float4 PhongBlinnPixel(PhongVertexOutput input) : COLOR0
 	float3 reflectDirection = -reflect(lightDirection, input.WorldNormal);
 	// Now, compute the lighint components
 	float diffuse = max(dot(lightDirection, input.WorldNormal), 0) * tex2D(DiffuseSampler, input.UV);
-	float specular = pow(max(dot((lightDirection + viewDirection), input.WorldNormal), 0), Shininess);
+	float specular = pow(max(dot(normalize(lightDirection + viewDirection), input.WorldNormal), 0), Shininess);
 	return float4(AmbientColor + diffuse * DiffuseColor + specular * SpecularColor, 1);
 }
 float4 SchlickPixel(PhongVertexOutput input) : COLOR0
