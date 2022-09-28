@@ -11,13 +11,15 @@ namespace CPI311.GameEngine
         private static Vector3[] vertices = { new Vector3(-1,-1, 1), new Vector3(1,-1, 1), new Vector3(1,-1,-1), new Vector3(-1,-1,-1), 
                                               new Vector3(-1, 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1,-1), new Vector3(-1, 1,-1) };
         
-        private static int[] indices = { 0,1,2,  0,2,3, // Down: using vertices[0][1][2] , [0][2][3] ...
-                                         5,4,7,  5,7,6, // Up
-                                         4,0,3,  4,3,7, // Left
-                                         1,5,6,  1,6,2, // Right
-                                         4,5,1,  4,1,0, // Front
-                                         3,2,6,  3,6,7, // Back
-                                       };
+        private static int[] indices = 
+        { 
+            0,1,2,  0,2,3, // Down: using vertices[0][1][2] , [0][2][3] ...
+            5,4,7,  5,7,6, // Up
+            4,0,3,  4,3,7, // Left
+            1,5,6,  1,6,2, // Right
+            4,5,1,  4,1,0, // Front
+            3,2,6,  3,6,7, // Back
+        };
 
         public override bool Collides(Collider other, out Vector3 normal)
         {
@@ -36,15 +38,16 @@ namespace CPI311.GameEngine
                         Vector3 b = vertices[indices[baseIndex + 1]] * Size;
                         Vector3 c = vertices[indices[baseIndex + 2]] * Size;
                         Vector3 n = normals[i];
-                        float d = Math.Abs( ??? );// calculate the distance to the plane 
+                        float d = Math.Abs( ??? Vector3.Dot(a, n)); // calculate the distance to the plane : dot(aP, n) = d < r
 
                         if (d < collider.Radius)
                         {
-                            Vector3 pointOnPlane = ???  // calculate the closest point
-                            float area1 = ??? // check if the point is inside of triangle
-                            float area2 = ???
-                            float area3 = ???
-                           if (!(area1 < 0 || area2 < 0 || area3 < 0))
+                            Vector3 pointOnPlane = ???;  // calculate the closest point : P + d * n
+                            float area1 = ???; // A X aQ
+                            float area2 = ???; // B X bQ
+                            float area3 = ???; // C x cQ
+
+                            if (!(area1 < 0 || area2 < 0 || area3 < 0))
                             {
                                 normal += n;
                                 j = 1; // skip second triangle, if necessary

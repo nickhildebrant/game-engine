@@ -1,6 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+using CPI311.GameEngine;
+using System.Diagnostics;
 
 namespace CPI311.Labs
 {
@@ -8,6 +13,16 @@ namespace CPI311.Labs
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        BoxCollider boxCollider;
+        SphereCollider sphere1, sphere2;
+
+        // *** Not using GameObject[]
+        List<Transform> transforms;
+        List<Rigidbody> rigidbodies;
+        List<Collider> colliders;
+
+        Random random;
 
         public Lab6()
         {
@@ -18,7 +33,36 @@ namespace CPI311.Labs
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            InputManager.Initialize();
+            Time.Initialize();
+
+            random = new Random();
+            transforms = new List<Transform>();
+            rigidbodies = new List<Rigidbody>();
+            colliders = new List<Collider>();
+            boxCollider = new BoxCollider();
+            boxCollider.Size = 10;
+
+            for (int i = 0; i < 2; i++)
+            {
+                Transform transform = new Transform();
+                transform.LocalPosition += Vector3.Right * 2 * i; //avoid overlapping each sphere 
+                Rigidbody rigidbody = new Rigidbody();
+                rigidbody.Transform = transform;
+                rigidbody.Mass = 1;
+
+                Vector3 direction = new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
+                direction.Normalize();
+                rigidbody.Velocity = direction * ((float)random.NextDouble() * 5 + 5);
+
+                SphereCollider sphereCollider = new SphereCollider();
+                sphereCollider.Radius = 1.0f * transform.LocalScale.Y;
+                sphereCollider.Transform = transform;
+
+                transforms.Add(transform);
+                colliders.Add(sphereCollider);
+                rigidbodies.Add(rigidbody);
+            }
 
             base.Initialize();
         }
@@ -35,7 +79,10 @@ namespace CPI311.Labs
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            InputManager.Update();
+            Time.Update(gameTime);
+
+            foreach (Rigidbody rigidbody in rigidbodies) rigidbody.Update();
 
             base.Update(gameTime);
         }
