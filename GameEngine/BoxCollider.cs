@@ -38,14 +38,14 @@ namespace CPI311.GameEngine
                         Vector3 b = vertices[indices[baseIndex + 1]] * Size;
                         Vector3 c = vertices[indices[baseIndex + 2]] * Size;
                         Vector3 n = normals[i];
-                        float d = Math.Abs( ??? Vector3.Dot(a, n)); // calculate the distance to the plane : dot(aP, n) = d < r
+                        float d = Math.Abs(Vector3.Dot(a * collider.Transform.Position, n)); // calculate the distance to the plane : dot(aP, n) = d < r
 
                         if (d < collider.Radius)
                         {
-                            Vector3 pointOnPlane = ???;  // calculate the closest point : P + d * n
-                            float area1 = ???; // A X aQ
-                            float area2 = ???; // B X bQ
-                            float area3 = ???; // C x cQ
+                            Vector3 pointOnPlane = collider.Transform.Position - d * n;  // calculate the closest point : Q = P - d * n
+                            float area1 = Vector3.Dot(Vector3.Cross(b - a, pointOnPlane - a), n);
+                            float area2 = Vector3.Dot(Vector3.Cross(c - b, pointOnPlane - b), n);
+                            float area3 = Vector3.Dot(Vector3.Cross(a - c, pointOnPlane - c), n);
 
                             if (!(area1 < 0 || area2 < 0 || area3 < 0))
                             {

@@ -77,8 +77,14 @@ namespace CPI311.Labs
 
             camera = new Camera();
             cameraTransform = new Transform();
-            cameraTransform.LocalPosition = Vector3.Backward * 5;
+            cameraTransform.LocalPosition = Vector3.Backward * 20;
             camera.Transform = cameraTransform;
+
+            // **** Lighting ****
+            foreach (ModelMesh mesh in model.Meshes)
+                foreach (BasicEffect effect in mesh.Effects)
+                    effect.EnableDefaultLighting();
+            // ******************
 
             base.Initialize();
         }
@@ -105,6 +111,7 @@ namespace CPI311.Labs
             {
                 if (boxCollider.Collides(colliders[i], out normal))
                 {
+
                     numberCollisions++;
                     if (Vector3.Dot(normal, rigidbodies[i].Velocity) < 0) 
                         rigidbodies[i].Impulse += Vector3.Dot(normal, rigidbodies[i].Velocity) * -2 * normal;
