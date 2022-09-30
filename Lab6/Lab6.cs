@@ -41,15 +41,37 @@ namespace CPI311.Labs
 
         protected override void Initialize()
         {
-            InputManager.Initialize();
             Time.Initialize();
+            InputManager.Initialize();
 
             random = new Random();
             transforms = new List<Transform>();
             rigidbodies = new List<Rigidbody>();
             colliders = new List<Collider>();
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
             boxCollider = new BoxCollider();
             boxCollider.Size = 10;
+
+            model = Content.Load<Model>("Sphere");
+            modelTransform = new Transform();
+
+            // **** Lighting ****
+            foreach (ModelMesh mesh in model.Meshes)
+                foreach (BasicEffect effect in mesh.Effects)
+                    effect.EnableDefaultLighting();
+            // ******************
+
+            camera = new Camera();
+            cameraTransform = new Transform();
+            cameraTransform.LocalPosition = Vector3.Backward * 20;
+            camera.Transform = cameraTransform;
 
             for (int i = 0; i < 2; i++)
             {
@@ -71,29 +93,6 @@ namespace CPI311.Labs
                 colliders.Add(sphereCollider);
                 rigidbodies.Add(rigidbody);
             }
-
-            model = Content.Load<Model>("Sphere");
-            modelTransform = new Transform();
-
-            camera = new Camera();
-            cameraTransform = new Transform();
-            cameraTransform.LocalPosition = Vector3.Backward * 20;
-            camera.Transform = cameraTransform;
-
-            // **** Lighting ****
-            foreach (ModelMesh mesh in model.Meshes)
-                foreach (BasicEffect effect in mesh.Effects)
-                    effect.EnableDefaultLighting();
-            // ******************
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -111,10 +110,8 @@ namespace CPI311.Labs
             {
                 if (boxCollider.Collides(colliders[i], out normal))
                 {
-
                     numberCollisions++;
-                    if (Vector3.Dot(normal, rigidbodies[i].Velocity) < 0) 
-                        rigidbodies[i].Impulse += Vector3.Dot(normal, rigidbodies[i].Velocity) * -2 * normal;
+                    if (Vector3.Dot(normal, rigidbodies[i].Velocity) < 0) rigidbodies[i].Impulse += Vector3.Dot(normal, rigidbodies[i].Velocity) * -2 * normal;
                 }
 
                 for(int j = i + 1; j < transforms.Count; j++)

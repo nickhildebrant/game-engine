@@ -38,7 +38,7 @@ namespace CPI311.GameEngine
                         Vector3 b = vertices[indices[baseIndex + 1]] * Size;
                         Vector3 c = vertices[indices[baseIndex + 2]] * Size;
                         Vector3 n = normals[i];
-                        float d = Math.Abs(Vector3.Dot(a * collider.Transform.Position, n)); // calculate the distance to the plane : dot(aP, n) = d < r
+                        float d = Math.Abs(Vector3.Dot(collider.Transform.Position - a, n)); ; // calculate the distance to the plane
 
                         if (d < collider.Radius)
                         {
