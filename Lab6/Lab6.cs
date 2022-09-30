@@ -17,10 +17,18 @@ namespace CPI311.Labs
         BoxCollider boxCollider;
         SphereCollider sphere1, sphere2;
 
+        Model model;
+        Transform modelTransform;
+
+        Camera camera;
+        Transform cameraTransform;
+
         // *** Not using GameObject[]
         List<Transform> transforms;
         List<Rigidbody> rigidbodies;
         List<Collider> colliders;
+
+        int numberCollisions = 0;
 
         Random random;
 
@@ -64,6 +72,14 @@ namespace CPI311.Labs
                 rigidbodies.Add(rigidbody);
             }
 
+            model = Content.Load<Model>("Sphere");
+            modelTransform = new Transform();
+
+            camera = new Camera();
+            cameraTransform = new Transform();
+            cameraTransform.LocalPosition = Vector3.Backward * 5;
+            camera.Transform = cameraTransform;
+
             base.Initialize();
         }
 
@@ -84,6 +100,26 @@ namespace CPI311.Labs
 
             foreach (Rigidbody rigidbody in rigidbodies) rigidbody.Update();
 
+            Vector3 normal; // it is updated if a collision happens
+            for(int i = 0; i < transforms.Count; i++)
+            {
+                if (boxCollider.Collides(colliders[i], out normal))
+                {
+                    numberCollisions++;
+                    if (Vector3.Dot(normal, rigidbodies[i].Velocity) < 0) 
+                        rigidbodies[i].Impulse += Vector3.Dot(normal, rigidbodies[i].Velocity) * -2 * normal;
+                }
+
+                for(int j = i + 1; j < transforms.Count; j++)
+                {
+                    if (colliders[i].Collides(colliders[j], out normal)) numberCollisions++;
+
+                    Vector3 velocityNormal = Vector3.Dot(normal, rigidbodies[i].Velocity - rigidbodies[j].Velocity) * -2 * normal * rigidbodies[i].Mass * rigidbodies[j].Mass;
+                    rigidbodies[i].Impulse += velocityNormal / 2;
+                    rigidbodies[j].Impulse += -velocityNormal / 2;
+                }
+            }
+
             base.Update(gameTime);
         }
 
@@ -91,7 +127,10 @@ namespace CPI311.Labs
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            foreach(Transform transform in transforms)
+            {
+                model.Draw(transform.World, camera.View, camera.Projection);
+            }
 
             base.Draw(gameTime);
         }
