@@ -23,10 +23,13 @@ namespace CPI311.Labs
         Camera camera;
         Transform cameraTransform;
 
+        Light light;
+
         // *** Not using GameObject[]
         List<Transform> transforms;
         List<Rigidbody> rigidbodies;
         List<Collider> colliders;
+        List<Renderer> renderers; // lab 7 update
 
         int numberCollisions = 0;
 
@@ -37,6 +40,7 @@ namespace CPI311.Labs
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -48,6 +52,7 @@ namespace CPI311.Labs
             transforms = new List<Transform>();
             rigidbodies = new List<Rigidbody>();
             colliders = new List<Collider>();
+            renderers = new List<Renderer>();
 
             base.Initialize();
         }
@@ -72,6 +77,11 @@ namespace CPI311.Labs
             cameraTransform = new Transform();
             cameraTransform.LocalPosition = Vector3.Backward * 20;
             camera.Transform = cameraTransform;
+
+            light = new Light();
+            Transform lightTransform = new Transform();
+            lightTransform.LocalPosition = Vector3.Backward * 10 + Vector3.Right * 5;
+            light.Transform = lightTransform;
         }
 
         protected override void Update(GameTime gameTime)
@@ -112,10 +122,15 @@ namespace CPI311.Labs
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            foreach (Transform transform in transforms)
+            /*for (int i = 0; i < transforms.Count; i++)
             {
-                model.Draw(transform.World, camera.View, camera.Projection);
-            }
+                float speed = rigidbodies[i].Velocity.Length();
+                float speedValue = MathHelper.Clamp(speed / 20f, 0, 1);
+                (model.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, speedValue, 1);
+                model.Draw(transforms[i].World, camera.View, camera.Projection);
+            }*/
+
+            for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
 
             base.Draw(gameTime);
         }
@@ -138,6 +153,10 @@ namespace CPI311.Labs
             SphereCollider sphereCollider = new SphereCollider();
             sphereCollider.Radius = 1.0f * transform.LocalScale.Y;
             sphereCollider.Transform = transform;
+
+            // Lab 7-E
+            Renderer renderer = new Renderer(model, transform, camera, light, Content, GraphicsDevice, 20f, Content.Load<Texture2D>("Square"), "SimpleShading", 1);
+            renderers.Add(renderer);
 
             // Add each element to its respective list
             transforms.Add(transform);
