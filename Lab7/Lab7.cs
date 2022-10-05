@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CPI311.GameEngine;
-
+using System.Threading;
 
 namespace CPI311.Labs
 {
@@ -31,6 +31,8 @@ namespace CPI311.Labs
         List<Collider> colliders;
         List<Renderer> renderers; // lab 7 update
 
+        bool haveThreadRunning;
+        int lastSecondCollision = 0;
         int numberCollisions = 0;
 
         Random random;
@@ -53,6 +55,9 @@ namespace CPI311.Labs
             rigidbodies = new List<Rigidbody>();
             colliders = new List<Collider>();
             renderers = new List<Renderer>();
+
+            haveThreadRunning = true;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(CollisionReset));
 
             base.Initialize();
         }
@@ -133,6 +138,18 @@ namespace CPI311.Labs
             for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
 
             base.Draw(gameTime);
+        }
+
+        // ** Lab 7 private Methods
+
+        private void CollisionReset(Object obj) 
+        {
+            while(haveThreadRunning)
+            {
+                lastSecondCollision = numberCollisions;
+                numberCollisions = 0;
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
         private void AddSphere()
