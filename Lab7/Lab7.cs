@@ -72,27 +72,6 @@ namespace CPI311.Labs
             cameraTransform = new Transform();
             cameraTransform.LocalPosition = Vector3.Backward * 20;
             camera.Transform = cameraTransform;
-
-            for (int i = 0; i < 2; i++)
-            {
-                Transform transform = new Transform();
-                transform.LocalPosition += Vector3.Right * 2 * i; //avoid overlapping each sphere 
-                Rigidbody rigidbody = new Rigidbody();
-                rigidbody.Transform = transform;
-                rigidbody.Mass = 1;
-
-                Vector3 direction = new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
-                direction.Normalize();
-                rigidbody.Velocity = direction * ((float)random.NextDouble() * 5 + 5);
-
-                SphereCollider sphereCollider = new SphereCollider();
-                sphereCollider.Radius = 1.0f * transform.LocalScale.Y;
-                sphereCollider.Transform = transform;
-
-                transforms.Add(transform);
-                colliders.Add(sphereCollider);
-                rigidbodies.Add(rigidbody);
-            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -104,6 +83,8 @@ namespace CPI311.Labs
             Time.Update(gameTime);
 
             foreach (Rigidbody rigidbody in rigidbodies) rigidbody.Update();
+
+            if (InputManager.IsKeyPressed(Keys.Space)) AddSphere();
 
             Vector3 normal; // it is updated if a collision happens
             for (int i = 0; i < transforms.Count; i++)
@@ -137,6 +118,31 @@ namespace CPI311.Labs
             }
 
             base.Draw(gameTime);
+        }
+
+        private void AddSphere()
+        {
+            // create new Transform and Rigidbody
+            Transform transform = new Transform();
+            transform.LocalPosition += Vector3.Right * 10 * (float)random.NextDouble(); //avoid overlapping each sphere 
+            Rigidbody rigidbody = new Rigidbody();
+            rigidbody.Transform = transform;
+            rigidbody.Mass = 1;
+
+            // set the direction and velocity
+            Vector3 direction = new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
+            direction.Normalize();
+            rigidbody.Velocity = direction * ((float)random.NextDouble() * 5 + 5);
+
+            // Create new sphereCollider
+            SphereCollider sphereCollider = new SphereCollider();
+            sphereCollider.Radius = 1.0f * transform.LocalScale.Y;
+            sphereCollider.Transform = transform;
+
+            // Add each element to its respective list
+            transforms.Add(transform);
+            colliders.Add(sphereCollider);
+            rigidbodies.Add(rigidbody);
         }
     }
 }
