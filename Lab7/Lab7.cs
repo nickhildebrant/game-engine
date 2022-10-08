@@ -13,6 +13,7 @@ namespace CPI311.Labs
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        SpriteFont font;
 
         BoxCollider boxCollider;
         SphereCollider sphere1, sphere2;
@@ -65,6 +66,7 @@ namespace CPI311.Labs
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = Content.Load<SpriteFont>("font");
 
             boxCollider = new BoxCollider();
             boxCollider.Size = 10;
@@ -87,6 +89,8 @@ namespace CPI311.Labs
             Transform lightTransform = new Transform();
             lightTransform.LocalPosition = Vector3.Backward * 10 + Vector3.Right * 5;
             light.Transform = lightTransform;
+
+            //for (int i = 0; i < 5; i++) AddSphere();
         }
 
         protected override void Update(GameTime gameTime)
@@ -136,6 +140,12 @@ namespace CPI311.Labs
             }*/
 
             for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
+
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(font, "lastSecondCollion = " + lastSecondCollision, new Vector2(5, 10), Color.Black);
+            _spriteBatch.DrawString(font, "numberOfCollisions = " + numberCollisions, new Vector2(5, 25), Color.Black);
+            _spriteBatch.DrawString(font, "Press SPACE to add a Sphere", new Vector2(5, 60), Color.Black);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
