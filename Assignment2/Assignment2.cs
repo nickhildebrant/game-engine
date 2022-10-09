@@ -17,18 +17,22 @@ namespace Assignment2
 
         Light light;
 
-        Model plane;
+        Model planeModel;
         Transform planeTransform;
+
+        Model playerModel;
+        Transform playerTransform;
 
         Model sunModel, mercModel, earthModel, moonModel;
 
-        List<Renderer> renderers;
+        List<Model> models;
 
         public Assignment2()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -36,7 +40,7 @@ namespace Assignment2
             InputManager.Initialize();
             Time.Initialize();
 
-            renderers = new List<Renderer>();
+            models = new List<Model>();
 
             base.Initialize();
         }
@@ -48,26 +52,43 @@ namespace Assignment2
 
             camera = new Camera();
             cameraTransform = new Transform();
-            cameraTransform.LocalPosition = Vector3.Backward * 5;
+            cameraTransform.LocalPosition = new Vector3(0, 0, 5);
             camera.Transform = cameraTransform;
 
-            light = new Light();
-            Transform lightTransform = new Transform();
-            lightTransform.LocalPosition = Vector3.Backward * 10 + Vector3.Right * 5;
-            light.Transform = lightTransform;
-
-            plane = Content.Load<Model>("Plane");
+            // Plane model
+            planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
-            renderers.Add(new Renderer(plane, planeTransform, camera, light, Content, GraphicsDevice, 20f, Content.Load<Texture2D>("Square"), "SimpleShading", 1));
+
+            // Player model
+            playerModel = Content.Load<Model>("Torus");
+            playerTransform = new Transform();
+            models.Add(playerModel);
+
+            //** For Lighting ************************************
+            foreach(Model model in models)
+            {
+                foreach (ModelMesh mesh in model.Meshes)
+                {
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.PreferPerPixelLighting = true;
+                    }
+                }
+            }
+            // ***************************************************
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             InputManager.Update();
             Time.Update(gameTime);
+
+            // Control zoom (field of view)
+            if (InputManager.IsKeyDown(Keys.PageUp) && camera.FieldOfView < 3.0f) camera.FieldOfView += 1.0f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.PageDown) && camera.FieldOfView > 0.5f) camera.FieldOfView -= 1.0f * Time.ElapsedGameTime;
 
             base.Update(gameTime);
         }
@@ -75,8 +96,14 @@ namespace Assignment2
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = new DepthStencilState(); // Fixes model clipping
 
-            for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
+            _spriteBatch.End();
+
+            //plane.Draw(planeTransform.World, camera.View, camera.Projection);
+            playerModel.Draw(playerTransform.World, camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }
