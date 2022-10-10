@@ -56,7 +56,8 @@ namespace Assignment2
             // Plane model
             planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
-            planeTransform.LocalScale = new Vector3(5, 1, 5);
+            planeTransform.LocalPosition = new Vector3(0, 0, 0);
+            planeTransform.LocalScale = new Vector3(1, 1, 1);
             models.Add(planeModel);
 
             // Player model
@@ -68,7 +69,7 @@ namespace Assignment2
             // Sun model
             sunModel = Content.Load<Model>("planet");
             sunTransform = new Transform();
-            sunTransform.LocalPosition = new Vector3(0, 0, 0);
+            sunTransform.LocalPosition = new Vector3(-5, 20, 0);
             models.Add(sunModel);
 
             // Mercury model
@@ -86,7 +87,7 @@ namespace Assignment2
             // Moon model
             moonModel = Content.Load<Model>("planet");
             moonTransform = new Transform();
-            moonTransform.LocalPosition = new Vector3(0, 0, 0);
+            moonTransform.LocalPosition = new Vector3(-5, 20, 0);
             models.Add(moonModel);
 
             // World Camera
@@ -132,8 +133,8 @@ namespace Assignment2
             else cameraInUse = camera;
 
             // Control zoom (field of view)
-            if (InputManager.IsKeyDown(Keys.PageUp) && cameraInUse.FieldOfView < 3.0f) cameraInUse.FieldOfView += 1.0f * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.PageDown) && cameraInUse.FieldOfView > 0.5f) cameraInUse.FieldOfView -= 1.0f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.PageDown) && cameraInUse.FieldOfView < 3.0f) cameraInUse.FieldOfView += 1.0f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.PageUp) && cameraInUse.FieldOfView > 0.5f) cameraInUse.FieldOfView -= 1.0f * Time.ElapsedGameTime;
 
             // Move the player and camera for fps
             if (InputManager.IsKeyDown(Keys.W))
