@@ -57,7 +57,7 @@ namespace Assignment2
             planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
             planeTransform.LocalPosition = new Vector3(0, 0, 0);
-            planeTransform.LocalScale = new Vector3(1, 1, 1);
+            planeTransform.LocalScale = new Vector3(2, 1, 2);
             models.Add(planeModel);
 
             // Player model
@@ -102,6 +102,7 @@ namespace Assignment2
             playerCameraTransform = new Transform();
             playerCameraTransform.LocalPosition = new Vector3(0, 5, 0);
             playerCamera.Transform = playerCameraTransform;
+            playerCamera.Transform.Parent = playerTransform;
 
             //** For Lighting ************************************
             foreach (Model model in models)
@@ -124,6 +125,9 @@ namespace Assignment2
 
             InputManager.Update();
             Time.Update(gameTime);
+
+            // rotate sun
+            sunTransform.Rotate(sunTransform.Up, Time.ElapsedGameTime);
 
             // switch camera
             if (InputManager.IsKeyPressed(Keys.Tab)) isFPS = !isFPS;
@@ -159,16 +163,10 @@ namespace Assignment2
             }
 
             // rotate the player
-            if (InputManager.IsKeyDown(Keys.Left))
-            {
-                playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
-                playerCameraTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
-            }
-            if(InputManager.IsKeyDown(Keys.Right))
-            {
-                playerTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
-                playerCameraTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
-            }
+            if (InputManager.IsKeyDown(Keys.Left)) playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Right)) playerTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
+
+            // Rotate the camera
             if (InputManager.IsKeyDown(Keys.Up)) playerCameraTransform.Rotate(Vector3.UnitX, Time.ElapsedGameTime);
             if (InputManager.IsKeyDown(Keys.Down)) playerCameraTransform.Rotate(Vector3.UnitX, -Time.ElapsedGameTime);
 
