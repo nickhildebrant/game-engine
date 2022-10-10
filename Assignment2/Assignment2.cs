@@ -12,8 +12,10 @@ namespace Assignment2
         private SpriteBatch _spriteBatch;
         SpriteFont font;
 
-        Camera camera;
-        Transform cameraTransform;
+        bool isFPS = false;
+
+        Camera camera, playerCamera;
+        Transform cameraTransform, playerCameraTransform;
 
         Light light;
 
@@ -51,15 +53,10 @@ namespace Assignment2
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("font");
 
-            camera = new Camera();
-            cameraTransform = new Transform();
-            cameraTransform.LocalPosition = new Vector3(-5, 40, 0);
-            cameraTransform.Rotate(Vector3.UnitX, -1.6f);
-            camera.Transform = cameraTransform;
-
             // Plane model
             planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
+            planeTransform.LocalScale = new Vector3(5, 1, 5);
             models.Add(planeModel);
 
             // Player model
@@ -92,6 +89,19 @@ namespace Assignment2
             moonTransform.LocalPosition = new Vector3(0, 0, 0);
             models.Add(moonModel);
 
+            // World Camera
+            camera = new Camera();
+            cameraTransform = new Transform();
+            cameraTransform.LocalPosition = new Vector3(-5, 40, 0);
+            cameraTransform.Rotate(Vector3.UnitX, -1.6f);
+            camera.Transform = cameraTransform;
+
+            // First-person Camera
+            playerCamera = new Camera();
+            playerCameraTransform = new Transform();
+            playerCameraTransform.LocalPosition = new Vector3(0, 5, 0);
+            playerCamera.Transform = playerCameraTransform;
+
             //** For Lighting ************************************
             foreach (Model model in models)
             {
@@ -114,14 +124,48 @@ namespace Assignment2
             InputManager.Update();
             Time.Update(gameTime);
 
+            // switch camera
+            if (InputManager.IsKeyPressed(Keys.Tab)) isFPS = !isFPS;
+
             // Control zoom (field of view)
             if (InputManager.IsKeyDown(Keys.PageUp) && camera.FieldOfView < 3.0f) camera.FieldOfView += 1.0f * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.PageDown) && camera.FieldOfView > 0.5f) camera.FieldOfView -= 1.0f * Time.ElapsedGameTime;
 
-            if (InputManager.IsKeyDown(Keys.W)) playerTransform.LocalPosition += Vector3.Forward * 10 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.S)) playerTransform.LocalPosition += Vector3.Backward * 10 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.A)) playerTransform.LocalPosition += Vector3.Left * 10 * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.D)) playerTransform.LocalPosition += Vector3.Right * 10 * Time.ElapsedGameTime;
+            // Move the player and camera for fps
+            if (InputManager.IsKeyDown(Keys.W))
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
+            }
+            if (InputManager.IsKeyDown(Keys.S))
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
+            }
+            if (InputManager.IsKeyDown(Keys.A))
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Left * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Left * 10 * Time.ElapsedGameTime;
+            }
+            if (InputManager.IsKeyDown(Keys.D))
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
+            }
+
+            // rotate the player
+            if (InputManager.IsKeyDown(Keys.Left))
+            {
+                playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
+                playerCameraTransform.Rotate(Vector3.Up, Time.ElapsedGameTime);
+            }
+            if(InputManager.IsKeyDown(Keys.Right))
+            {
+                playerTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
+                playerCameraTransform.Rotate(Vector3.Up, -Time.ElapsedGameTime);
+            }
+            if (InputManager.IsKeyDown(Keys.Up)) playerCameraTransform.Rotate(Vector3.UnitX, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Down)) playerCameraTransform.Rotate(Vector3.UnitX, -Time.ElapsedGameTime);
 
             base.Update(gameTime);
         }
@@ -131,9 +175,13 @@ namespace Assignment2
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState(); // Fixes model clipping
 
-            planeModel.Draw(planeTransform.World, camera.View, camera.Projection);
-            playerModel.Draw(playerTransform.World, camera.View, camera.Projection);
-            sunModel.Draw(sunTransform.World, camera.View, camera.Projection);
+            Camera cameraInUse;
+            if (isFPS) cameraInUse = playerCamera;
+            else cameraInUse = camera;
+            
+            planeModel.Draw(planeTransform.World, cameraInUse.View, cameraInUse.Projection);
+            if(!isFPS) playerModel.Draw(playerTransform.World, cameraInUse.View, cameraInUse.Projection);
+            sunModel.Draw(sunTransform.World, cameraInUse.View, cameraInUse.Projection);
 
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
