@@ -93,7 +93,7 @@ namespace Assignment2
             camera = new Camera();
             cameraTransform = new Transform();
             cameraTransform.LocalPosition = new Vector3(-5, 40, 0);
-            cameraTransform.Rotate(Vector3.UnitX, -1.6f);
+            cameraTransform.Rotate(Vector3.UnitX, -1.55f);
             camera.Transform = cameraTransform;
 
             // First-person Camera
@@ -127,9 +127,13 @@ namespace Assignment2
             // switch camera
             if (InputManager.IsKeyPressed(Keys.Tab)) isFPS = !isFPS;
 
+            Camera cameraInUse;
+            if (isFPS) cameraInUse = playerCamera;
+            else cameraInUse = camera;
+
             // Control zoom (field of view)
-            if (InputManager.IsKeyDown(Keys.PageUp) && camera.FieldOfView < 3.0f) camera.FieldOfView += 1.0f * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.PageDown) && camera.FieldOfView > 0.5f) camera.FieldOfView -= 1.0f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.PageUp) && cameraInUse.FieldOfView < 3.0f) cameraInUse.FieldOfView += 1.0f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.PageDown) && cameraInUse.FieldOfView > 0.5f) cameraInUse.FieldOfView -= 1.0f * Time.ElapsedGameTime;
 
             // Move the player and camera for fps
             if (InputManager.IsKeyDown(Keys.W))
@@ -157,12 +161,12 @@ namespace Assignment2
             if (InputManager.IsKeyDown(Keys.Left))
             {
                 playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
-                playerCameraTransform.Rotate(Vector3.Up, Time.ElapsedGameTime);
+                playerCameraTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
             }
             if(InputManager.IsKeyDown(Keys.Right))
             {
                 playerTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
-                playerCameraTransform.Rotate(Vector3.Up, -Time.ElapsedGameTime);
+                playerCameraTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
             }
             if (InputManager.IsKeyDown(Keys.Up)) playerCameraTransform.Rotate(Vector3.UnitX, Time.ElapsedGameTime);
             if (InputManager.IsKeyDown(Keys.Down)) playerCameraTransform.Rotate(Vector3.UnitX, -Time.ElapsedGameTime);
@@ -185,7 +189,9 @@ namespace Assignment2
 
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
-            _spriteBatch.DrawString(font, "Player Position: WASD = " + playerTransform.LocalPosition, new Vector2(5, 30), Color.Black);
+            _spriteBatch.DrawString(font, "Change Camera: TAB", new Vector2(5, 30), Color.Black);
+            _spriteBatch.DrawString(font, "Player Position: WASD", new Vector2(5, 50), Color.Black);
+            _spriteBatch.DrawString(font, "Player Rotation: Arrow Keys", new Vector2(5, 70), Color.Black);
             _spriteBatch.End();
 
             base.Draw(gameTime);
