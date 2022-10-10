@@ -24,6 +24,7 @@ namespace Assignment2
         Transform playerTransform;
 
         Model sunModel, mercModel, earthModel, moonModel;
+        Transform sunTransform, mercTransform, earthTransform, moonTransform;
 
         List<Model> models;
 
@@ -52,20 +53,47 @@ namespace Assignment2
 
             camera = new Camera();
             cameraTransform = new Transform();
-            cameraTransform.LocalPosition = new Vector3(0, 0, 5);
+            cameraTransform.LocalPosition = new Vector3(-5, 40, 0);
+            cameraTransform.Rotate(Vector3.UnitX, -1.6f);
             camera.Transform = cameraTransform;
 
             // Plane model
             planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
+            models.Add(planeModel);
 
             // Player model
-            playerModel = Content.Load<Model>("Torus");
+            playerModel = Content.Load<Model>("player");
             playerTransform = new Transform();
+            playerTransform.LocalPosition = new Vector3(0, 0, 0);
             models.Add(playerModel);
 
+            // Sun model
+            sunModel = Content.Load<Model>("planet");
+            sunTransform = new Transform();
+            sunTransform.LocalPosition = new Vector3(0, 0, 0);
+            models.Add(sunModel);
+
+            // Mercury model
+            mercModel = Content.Load<Model>("planet");
+            mercTransform = new Transform();
+            mercTransform.LocalPosition = new Vector3(0, 0, 0);
+            models.Add(mercModel);
+
+            // Earth model
+            earthModel = Content.Load<Model>("planet");
+            earthTransform = new Transform();
+            earthTransform.LocalPosition = new Vector3(0, 0, 0);
+            models.Add(earthModel);
+
+            // Moon model
+            moonModel = Content.Load<Model>("planet");
+            moonTransform = new Transform();
+            moonTransform.LocalPosition = new Vector3(0, 0, 0);
+            models.Add(moonModel);
+
             //** For Lighting ************************************
-            foreach(Model model in models)
+            foreach (Model model in models)
             {
                 foreach (ModelMesh mesh in model.Meshes)
                 {
@@ -90,6 +118,11 @@ namespace Assignment2
             if (InputManager.IsKeyDown(Keys.PageUp) && camera.FieldOfView < 3.0f) camera.FieldOfView += 1.0f * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.PageDown) && camera.FieldOfView > 0.5f) camera.FieldOfView -= 1.0f * Time.ElapsedGameTime;
 
+            if (InputManager.IsKeyDown(Keys.W)) playerTransform.LocalPosition += Vector3.Forward * 10 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.S)) playerTransform.LocalPosition += Vector3.Backward * 10 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.A)) playerTransform.LocalPosition += Vector3.Left * 10 * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.D)) playerTransform.LocalPosition += Vector3.Right * 10 * Time.ElapsedGameTime;
+
             base.Update(gameTime);
         }
 
@@ -98,12 +131,14 @@ namespace Assignment2
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState(); // Fixes model clipping
 
+            planeModel.Draw(planeTransform.World, camera.View, camera.Projection);
+            playerModel.Draw(playerTransform.World, camera.View, camera.Projection);
+            sunModel.Draw(sunTransform.World, camera.View, camera.Projection);
+
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
+            _spriteBatch.DrawString(font, "Player Position: WASD = " + playerTransform.LocalPosition, new Vector2(5, 30), Color.Black);
             _spriteBatch.End();
-
-            //plane.Draw(planeTransform.World, camera.View, camera.Projection);
-            playerModel.Draw(playerTransform.World, camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }
