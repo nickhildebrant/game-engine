@@ -70,6 +70,7 @@ namespace Assignment2
             // Sun model
             sunModel = Content.Load<Model>("planet");
             sunTransform = new Transform();
+            sunTransform.LocalPosition = new Vector3(0, 30, 0);
             sunTransform.LocalScale = new Vector3(5, 5, 5);
             models.Add(sunModel);
 
@@ -89,6 +90,7 @@ namespace Assignment2
             moonModel = Content.Load<Model>("planet");
             moonTransform = new Transform();
             moonTransform.Parent = earthTransform;
+            moonTransform.LocalScale = new Vector3(1/3f, 1/3f, 1/3f);
             models.Add(moonModel);
 
             // World Camera
@@ -100,6 +102,7 @@ namespace Assignment2
 
             // First-person Camera
             playerCamera = new Camera();
+            playerCamera.FarPlane = 1000f;
             playerCameraTransform = new Transform();
             playerCameraTransform.LocalPosition = new Vector3(0, 5, 0);
             playerCamera.Transform = playerCameraTransform;
@@ -135,13 +138,13 @@ namespace Assignment2
             earthTransform.Rotate(Vector3.Up, -2 * Time.ElapsedGameTime);
 
             // rotate moon
-            //moonTransform.Rotate(Vector3.Up, 4 * Time.ElapsedGameTime);
+            moonTransform.Rotate(Vector3.Up, 4 * Time.ElapsedGameTime);
             /// *************
 
             /// *** Orbiting
-            mercTransform.LocalPosition = new Vector3(25 * (float)Math.Sin(2*orbitAngle), 0f, 25 * (float)Math.Cos(2*orbitAngle));
-            earthTransform.LocalPosition = new Vector3(50 * (float)Math.Sin(orbitAngle + 2.5f), 0f, 50 * (float)Math.Cos(orbitAngle + 2.5f));
-            moonTransform.LocalPosition = new Vector3(10 * (float)Math.Sin(orbitAngle), 0f, 10 * (float)Math.Cos(orbitAngle));
+            mercTransform.LocalPosition = new Vector3(25 * (float)Math.Sin(2*orbitAngle), 30f, 25 * (float)Math.Cos(2*orbitAngle));
+            earthTransform.LocalPosition = new Vector3(50 * (float)Math.Sin(orbitAngle + 2.5f), 30f, 50 * (float)Math.Cos(orbitAngle + 2.5f));
+            moonTransform.LocalPosition = new Vector3(5 * (float)Math.Sin(4*orbitAngle), 0f, 5 * (float)Math.Cos(4*orbitAngle));
             orbitAngle += Time.ElapsedGameTime;
             /// ***************
 
@@ -203,7 +206,7 @@ namespace Assignment2
             sunModel.Draw(sunTransform.World, cameraInUse.View, cameraInUse.Projection);
             mercModel.Draw(mercTransform.World, cameraInUse.View, cameraInUse.Projection);
             earthModel.Draw(earthTransform.World, cameraInUse.View, cameraInUse.Projection);
-            //moonModel.Draw(moonTransform.World, cameraInUse.View, cameraInUse.Projection);
+            moonModel.Draw(moonTransform.World, cameraInUse.View, cameraInUse.Projection);
 
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
