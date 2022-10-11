@@ -180,6 +180,16 @@ namespace Assignment2
                 playerCameraTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
                 playerTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
             }
+            if(InputManager.IsMouseLeftDown())
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
+            }
+            if (InputManager.IsMouseRightDown())
+            {
+                playerCameraTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
+                playerTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
+            }
 
             // rotate the player
             if (InputManager.IsKeyDown(Keys.Left)) playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
@@ -188,6 +198,16 @@ namespace Assignment2
             // Rotate the camera
             if (InputManager.IsKeyDown(Keys.Up)) playerCameraTransform.Rotate(Vector3.UnitX, Time.ElapsedGameTime);
             if (InputManager.IsKeyDown(Keys.Down)) playerCameraTransform.Rotate(Vector3.UnitX, -Time.ElapsedGameTime);
+
+            // Mouse controls
+            if (isFPS)
+            {
+                if (InputManager.GetMousePosition().X < 360) playerTransform.Rotate(Vector3.UnitY, Time.ElapsedGameTime);
+                if (InputManager.GetMousePosition().X > 440) playerTransform.Rotate(Vector3.UnitY, -Time.ElapsedGameTime);
+
+                if (InputManager.GetMousePosition().Y < 200) playerCameraTransform.Rotate(Vector3.UnitX, .5f * Time.ElapsedGameTime);
+                if (InputManager.GetMousePosition().Y > 280) playerCameraTransform.Rotate(Vector3.UnitX, -.5f * Time.ElapsedGameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -213,6 +233,8 @@ namespace Assignment2
             _spriteBatch.DrawString(font, "Change Camera: TAB", new Vector2(5, 30), Color.Black);
             _spriteBatch.DrawString(font, "Player Position: WASD", new Vector2(5, 50), Color.Black);
             _spriteBatch.DrawString(font, "Player Rotation: Arrow Keys", new Vector2(5, 70), Color.Black);
+            _spriteBatch.DrawString(font, "Player Movement: Hold Mouse Buttons", new Vector2(5, 90), Color.Black);
+            _spriteBatch.DrawString(font, "Mouse Position: " + InputManager.GetMousePosition().ToString(), new Vector2(5, 110), Color.Black);
             _spriteBatch.End();
 
             base.Draw(gameTime);

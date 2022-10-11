@@ -42,9 +42,20 @@ namespace CPI311.GameEngine
                 && PreviousMouseState.LeftButton != ButtonState.Pressed; 
         }
 
+        public static bool IsMouseRightClicked()
+        {
+            return CurrentMouseState.RightButton == ButtonState.Pressed
+                && PreviousMouseState.RightButton != ButtonState.Pressed;
+        }
+
         public static bool IsMouseLeftDown()
         {
             return CurrentMouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        public static bool IsMouseRightDown()
+        {
+            return CurrentMouseState.RightButton == ButtonState.Pressed;
         }
 
         public static Vector2 GetMousePosition() { return new Vector2(CurrentMouseState.X, CurrentMouseState.Y); }
