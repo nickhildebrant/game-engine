@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,6 +14,8 @@ namespace Assignment2
         private SpriteBatch _spriteBatch;
         SpriteFont font;
 
+        float simSpeed = 1.0f;
+        
         bool isFPS = false;
 
         Camera camera, playerCamera;
@@ -66,6 +68,7 @@ namespace Assignment2
             playerTransform = new Transform();
             playerTransform.LocalPosition = new Vector3(0, 0, 0);
             models.Add(playerModel);
+            (playerModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(0.5f, 0.5f, 1);
 
             // Sun model
             sunModel = Content.Load<Model>("planet");
@@ -130,21 +133,25 @@ namespace Assignment2
             InputManager.Update();
             Time.Update(gameTime);
 
+            // Change sim speed
+            if (InputManager.IsKeyDown(Keys.LeftShift) || InputManager.IsKeyDown(Keys.RightShift)) simSpeed += simSpeed * Time.ElapsedGameTime;
+            if ((InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.RightControl)) && simSpeed > 0) simSpeed -= simSpeed * Time.ElapsedGameTime;
+
             /// *** Rotation
             // rotate sun
-            sunTransform.Rotate(Vector3.Up, Time.ElapsedGameTime);
+            sunTransform.Rotate(Vector3.Up, simSpeed * Time.ElapsedGameTime);
 
             // rotate earth
-            earthTransform.Rotate(Vector3.Up, -2 * Time.ElapsedGameTime);
+            earthTransform.Rotate(Vector3.Up, simSpeed * -2 * Time.ElapsedGameTime);
 
             // rotate moon
-            moonTransform.Rotate(Vector3.Up, 4 * Time.ElapsedGameTime);
+            moonTransform.Rotate(Vector3.Up, simSpeed * 4 * Time.ElapsedGameTime);
             /// *************
 
             /// *** Orbiting
-            mercTransform.LocalPosition = new Vector3(25 * (float)Math.Sin(2*orbitAngle), 30f, 25 * (float)Math.Cos(2*orbitAngle));
-            earthTransform.LocalPosition = new Vector3(50 * (float)Math.Sin(orbitAngle + 2.5f), 30f, 50 * (float)Math.Cos(orbitAngle + 2.5f));
-            moonTransform.LocalPosition = new Vector3(5 * (float)Math.Sin(4*orbitAngle), 0f, 5 * (float)Math.Cos(4*orbitAngle));
+            mercTransform.LocalPosition = new Vector3(25 * (float)Math.Sin(simSpeed * 2 *orbitAngle), 30f, 25 * (float)Math.Cos(simSpeed * 2 *orbitAngle));
+            earthTransform.LocalPosition = new Vector3(50 * (float)Math.Sin(simSpeed * (orbitAngle + 2.5f)), 30f, 50 * (float)Math.Cos(simSpeed * (orbitAngle + 2.5f)));
+            moonTransform.LocalPosition = new Vector3(5 * (float)Math.Sin(simSpeed * 4 *orbitAngle), 0f, 5 * (float)Math.Cos(simSpeed * 4 *orbitAngle));
             orbitAngle += Time.ElapsedGameTime;
             /// ***************
 
@@ -235,6 +242,7 @@ namespace Assignment2
             _spriteBatch.DrawString(font, "Player Rotation: Arrow Keys", new Vector2(5, 70), Color.Black);
             _spriteBatch.DrawString(font, "Player Movement: Hold Mouse Buttons", new Vector2(5, 90), Color.Black);
             _spriteBatch.DrawString(font, "Mouse Position: " + InputManager.GetMousePosition().ToString(), new Vector2(5, 110), Color.Black);
+            _spriteBatch.DrawString(font, "Simulation Speed: SHIFT/CTRL", new Vector2(5, 130), Color.Black);
             _spriteBatch.End();
 
             base.Draw(gameTime);
