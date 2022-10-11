@@ -68,7 +68,7 @@ namespace Assignment2
             playerTransform = new Transform();
             playerTransform.LocalPosition = new Vector3(0, 0, 0);
             models.Add(playerModel);
-            (playerModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(0.5f, 0.5f, 1);
+            (playerModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(0.5f, 0f, 0.8f);
 
             // Sun model
             sunModel = Content.Load<Model>("planet");
@@ -134,8 +134,8 @@ namespace Assignment2
             Time.Update(gameTime);
 
             // Change sim speed
-            if (InputManager.IsKeyDown(Keys.LeftShift) || InputManager.IsKeyDown(Keys.RightShift)) simSpeed += simSpeed * Time.ElapsedGameTime;
-            if ((InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.RightControl)) && simSpeed > 0) simSpeed -= simSpeed * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.LeftShift) || InputManager.IsKeyDown(Keys.RightShift)) simSpeed += Time.ElapsedGameTime;
+            if ((InputManager.IsKeyDown(Keys.LeftControl) || InputManager.IsKeyDown(Keys.RightControl)) && simSpeed > 0) simSpeed -= Time.ElapsedGameTime;
 
             /// *** Rotation
             // rotate sun
@@ -145,7 +145,7 @@ namespace Assignment2
             earthTransform.Rotate(Vector3.Up, simSpeed * -2 * Time.ElapsedGameTime);
 
             // rotate moon
-            moonTransform.Rotate(Vector3.Up, simSpeed * 4 * Time.ElapsedGameTime);
+            moonTransform.Rotate(Vector3.Up, simSpeed * 6 * Time.ElapsedGameTime);
             /// *************
 
             /// *** Orbiting
@@ -241,8 +241,7 @@ namespace Assignment2
             _spriteBatch.DrawString(font, "Player Position: WASD", new Vector2(5, 50), Color.Black);
             _spriteBatch.DrawString(font, "Player Rotation: Arrow Keys", new Vector2(5, 70), Color.Black);
             _spriteBatch.DrawString(font, "Player Movement: Hold Mouse Buttons", new Vector2(5, 90), Color.Black);
-            _spriteBatch.DrawString(font, "Mouse Position: " + InputManager.GetMousePosition().ToString(), new Vector2(5, 110), Color.Black);
-            _spriteBatch.DrawString(font, "Simulation Speed: SHIFT/CTRL", new Vector2(5, 130), Color.Black);
+            _spriteBatch.DrawString(font, "Simulation Speed: SHIFT/CTRL", new Vector2(5, 110), Color.Black);
             _spriteBatch.End();
 
             base.Draw(gameTime);
