@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,14 +19,13 @@ namespace Assignment2
         Camera camera, playerCamera;
         Transform cameraTransform, playerCameraTransform;
 
-        Light light;
-
         Model planeModel;
         Transform planeTransform;
 
         Model playerModel;
         Transform playerTransform;
 
+        float orbitAngle = 0f;
         Model sunModel, mercModel, earthModel, moonModel;
         Transform sunTransform, mercTransform, earthTransform, moonTransform;
 
@@ -57,7 +58,7 @@ namespace Assignment2
             planeModel = Content.Load<Model>("Plane");
             planeTransform = new Transform();
             planeTransform.LocalPosition = new Vector3(0, 0, 0);
-            planeTransform.LocalScale = new Vector3(2, 1, 2);
+            planeTransform.LocalScale = new Vector3(3, 1, 3);
             models.Add(planeModel);
 
             // Player model
@@ -69,31 +70,31 @@ namespace Assignment2
             // Sun model
             sunModel = Content.Load<Model>("planet");
             sunTransform = new Transform();
-            sunTransform.LocalPosition = new Vector3(-5, 20, 0);
+            sunTransform.LocalScale = new Vector3(5, 5, 5);
             models.Add(sunModel);
 
             // Mercury model
             mercModel = Content.Load<Model>("planet");
             mercTransform = new Transform();
-            mercTransform.LocalPosition = new Vector3(0, 0, 0);
+            mercTransform.LocalScale = new Vector3(2, 2, 2);
             models.Add(mercModel);
 
             // Earth model
             earthModel = Content.Load<Model>("planet");
             earthTransform = new Transform();
-            earthTransform.LocalPosition = new Vector3(0, 0, 0);
+            earthTransform.LocalScale = new Vector3(3, 3, 3);
             models.Add(earthModel);
 
             // Moon model
             moonModel = Content.Load<Model>("planet");
             moonTransform = new Transform();
-            moonTransform.LocalPosition = new Vector3(-5, 20, 0);
+            moonTransform.Parent = earthTransform;
             models.Add(moonModel);
 
             // World Camera
             camera = new Camera();
             cameraTransform = new Transform();
-            cameraTransform.LocalPosition = new Vector3(-5, 40, 0);
+            cameraTransform.LocalPosition = new Vector3(0, 90, 0);
             cameraTransform.Rotate(Vector3.UnitX, -1.55f);
             camera.Transform = cameraTransform;
 
@@ -126,8 +127,23 @@ namespace Assignment2
             InputManager.Update();
             Time.Update(gameTime);
 
+            /// *** Rotation
             // rotate sun
-            sunTransform.Rotate(sunTransform.Up, Time.ElapsedGameTime);
+            sunTransform.Rotate(Vector3.Up, Time.ElapsedGameTime);
+
+            // rotate earth
+            earthTransform.Rotate(Vector3.Up, -2 * Time.ElapsedGameTime);
+
+            // rotate moon
+            //moonTransform.Rotate(Vector3.Up, 4 * Time.ElapsedGameTime);
+            /// *************
+
+            /// *** Orbiting
+            mercTransform.LocalPosition = new Vector3(25 * (float)Math.Sin(2*orbitAngle), 0f, 25 * (float)Math.Cos(2*orbitAngle));
+            earthTransform.LocalPosition = new Vector3(50 * (float)Math.Sin(orbitAngle + 2.5f), 0f, 50 * (float)Math.Cos(orbitAngle + 2.5f));
+            moonTransform.LocalPosition = new Vector3(10 * (float)Math.Sin(orbitAngle), 0f, 10 * (float)Math.Cos(orbitAngle));
+            orbitAngle += Time.ElapsedGameTime;
+            /// ***************
 
             // switch camera
             if (InputManager.IsKeyPressed(Keys.Tab)) isFPS = !isFPS;
@@ -181,10 +197,13 @@ namespace Assignment2
             Camera cameraInUse;
             if (isFPS) cameraInUse = playerCamera;
             else cameraInUse = camera;
-            
+
+            if (!isFPS) playerModel.Draw(playerTransform.World, cameraInUse.View, cameraInUse.Projection);
             planeModel.Draw(planeTransform.World, cameraInUse.View, cameraInUse.Projection);
-            if(!isFPS) playerModel.Draw(playerTransform.World, cameraInUse.View, cameraInUse.Projection);
             sunModel.Draw(sunTransform.World, cameraInUse.View, cameraInUse.Projection);
+            mercModel.Draw(mercTransform.World, cameraInUse.View, cameraInUse.Projection);
+            earthModel.Draw(earthTransform.World, cameraInUse.View, cameraInUse.Projection);
+            //moonModel.Draw(moonTransform.World, cameraInUse.View, cameraInUse.Projection);
 
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "Zoom: PAGE UP/DOWN", new Vector2(5, 10), Color.Black);
