@@ -62,5 +62,15 @@ namespace CPI311.GameEngine
             }
             return base.Collides(other, out normal);
         }
+
+        // Lab 8 Extension for Raycasting
+        public override float? Intersects(Ray ray)
+        {
+            Matrix worldInv = Matrix.Invert(Transform.World);
+            ray.Position = Vector3.Transform(ray.Position, worldInv);
+            ray.Direction = Vector3.TransformNormal(ray.Direction, worldInv);
+
+            return new BoundingBox(-Vector3.One * Size, Vector3.One * Size).Intersects(ray);
+        }
     }
 }

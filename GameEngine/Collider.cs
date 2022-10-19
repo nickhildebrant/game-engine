@@ -9,5 +9,8 @@ namespace CPI311.GameEngine
             normal = Vector3.Zero;
             return false;
         }
+
+        // Lab 8 Extension for Raycasting
+        public virtual float? Intersects(Ray ray) { return null; }
     }
 }
