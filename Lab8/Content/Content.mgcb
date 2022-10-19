@@ -19,6 +19,12 @@
 /processorParam:Quality=Best
 /build:Gun.wav
 
+#begin SimpleShading.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:SimpleShading.fx
+
 #begin Sphere.FBX
 /importer:FbxImporter
 /processor:ModelProcessor
