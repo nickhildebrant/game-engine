@@ -98,7 +98,7 @@ namespace CPI311.Labs
             Time.Update(gameTime);
             InputManager.Update();
 
-            if (InputManager.IsMouseLeftClicked())
+            if (InputManager.IsMouseClicked(0))
             {
                 SoundEffectInstance instance = gunSound.CreateInstance();
                 instance.Play();
