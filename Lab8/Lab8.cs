@@ -101,6 +101,12 @@ namespace CPI311.Labs
             if (InputManager.IsMouseClicked(0))
             {
                 SoundEffectInstance instance = gunSound.CreateInstance();
+                AudioListener listener = new AudioListener();
+                listener.Position = camera.Transform.Position;
+                listener.Forward = camera.Transform.Forward;
+                AudioEmitter emitter = new AudioEmitter();
+                emitter.Position = modelTransform.Position;
+                instance.Apply3D(listener, emitter);
                 instance.Play();
             }
 

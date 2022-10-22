@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vW3AWPXsR1lVhgM32DxoAeB6lZDqeQf69XFp6HCZs0O4Z2XkmyIhHJwLhyzWkL8HEfdvmemSNA1i/yxgKWfuLg==",
+  "dgSpecHash": "OAOVDveaayE2AgdYKMuXWY/25CRjHF+cvmgsXStkhZW7WI64aCn5mfqGC6Ltk/4cX6sPDLlXq9aSr0tsyHCG4A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\nickh\\OneDrive\\Documents\\game-engine\\Lab1\\Lab1.csproj",
+  "projectFilePath": "C:\\Users\\nickh\\OneDrive\\Documents\\GitHub\\game-engine\\Lab1\\Lab1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\nickh\\.nuget\\packages\\libuv\\1.9.1\\libuv.1.9.1.nupkg.sha512",
     "C:\\Users\\nickh\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\1.1.0\\microsoft.codeanalysis.analyzers.1.1.0.nupkg.sha512",
