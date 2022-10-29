@@ -45,6 +45,18 @@ namespace CPI311.GameEngine
             return component;
         }
 
+        public void Add<T>(T component) where T : Component
+        {
+            Remove<T>();
+            component.GameObject = this;
+            component.Transform = Transform;
+            Components.Add(typeof(T), component);
+
+            if (component is IUpdateable) Updateables.Add(component as IUpdateable);
+            if (component is IRenderable) Renderables.Add(component as IRenderable);
+            if (component is IDrawable) Drawables.Add(component as IDrawable);
+        }
+
         public T Get<T>() where T : Component
         {
             if (Components.ContainsKey(typeof(T))) return Components[typeof(T)] as T;
