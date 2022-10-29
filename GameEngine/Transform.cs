@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CPI311.GameEngine
 {
-    public class Transform
+    public class Transform : Component, IUpdateable
     {
         // *** Uodate Lab4-C
         private Transform parent;
@@ -125,6 +125,11 @@ namespace CPI311.GameEngine
         public void Rotate(Vector3 axis, float angle)
         {
             localRotation *= Quaternion.CreateFromAxisAngle(axis, angle);
+            UpdateWorld();
+        }
+
+        public void Update()
+        {
             UpdateWorld();
         }
 

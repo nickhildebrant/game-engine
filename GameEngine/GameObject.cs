@@ -47,7 +47,6 @@ namespace CPI311.GameEngine
 
         public void Add<T>(T component) where T : Component
         {
-            Remove<T>();
             component.GameObject = this;
             component.Transform = Transform;
             Components.Add(typeof(T), component);
