@@ -89,7 +89,7 @@ namespace Assignment1
             }
 
             // When the mouse is clicked
-            if (InputManager.IsMouseLeftClicked())
+            if (InputManager.IsMouseClicked(0))
             {
                 destination = InputManager.GetMousePosition();
                 isThere = false;

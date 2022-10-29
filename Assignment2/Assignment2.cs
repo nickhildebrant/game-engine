@@ -187,12 +187,12 @@ namespace Assignment2
                 playerCameraTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
                 playerTransform.LocalPosition += playerTransform.Right * 10 * Time.ElapsedGameTime;
             }
-            if(InputManager.IsMouseLeftDown())
+            if(InputManager.IsMouseHeld(0))
             {
                 playerCameraTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
                 playerTransform.LocalPosition += playerTransform.Forward * 10 * Time.ElapsedGameTime;
             }
-            if (InputManager.IsMouseRightDown())
+            if (InputManager.IsMouseHeld(1))
             {
                 playerCameraTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
                 playerTransform.LocalPosition += playerTransform.Backward * 10 * Time.ElapsedGameTime;
