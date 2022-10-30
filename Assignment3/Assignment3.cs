@@ -66,8 +66,6 @@ namespace Assignment3
             lightTransform.LocalPosition = Vector3.Backward * 10 + Vector3.Right * 5;
             light.Transform = lightTransform;
 
-            boxCollider = new BoxCollider();
-
             gameObjects = new List<GameObject> { };
 
             AddGameObject();
@@ -92,7 +90,10 @@ namespace Assignment3
             if (InputManager.IsKeyPressed(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
 
             // Update each GameObject
-            foreach (GameObject gameObject in gameObjects) gameObject.Update();
+            foreach (GameObject gameObject in gameObjects)
+            {
+                gameObject.Update();
+            }
 
             Vector3 normal; // it is updated if a collision happens
             for (int i = 0; i < gameObjects.Count; i++)
@@ -101,18 +102,16 @@ namespace Assignment3
                 if (boxCollider.Collides(gameObjects[i].Collider, out normal))
                 {
                     numberCollisions++;
-                    Debug.WriteLine("Collision Detected: " + numberCollisions);
-                    //if (Vector3.Dot(normal, rigidbodies[i].Velocity) < 0) rigidbodies[i].Impulse += Vector3.Dot(normal, rigidbodies[i].Velocity) * -2 * normal;
-                    if (Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) < 0) gameObjects[i].Rigidbody.Impulse += Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) * -2 * normal;
+                    if (Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) < 0) gameObjects[i].Rigidbody.Impulse += Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) * -(2*gameObjects[i].Rigidbody.Mass) * normal;
                 }
 
                 for (int j = i + 1; j < gameObjects.Count; j++)
                 {
                     if (gameObjects[i].Collider.Collides(gameObjects[j].Collider, out normal)) numberCollisions++;
 
-                    Vector3 velocityNormal = Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity - gameObjects[j].Rigidbody.Velocity) * -2 * normal * gameObjects[i].Rigidbody.Mass * gameObjects[j].Rigidbody.Mass;
-                    gameObjects[i].Rigidbody.Impulse += velocityNormal / 2;
-                    gameObjects[j].Rigidbody.Impulse += -velocityNormal / 2;
+                    Vector3 velocityNormal = Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity - gameObjects[j].Rigidbody.Velocity) * -2 * gameObjects[i].Rigidbody.Mass * gameObjects[j].Rigidbody.Mass * normal;
+                    gameObjects[i].Rigidbody.Impulse += velocityNormal / (2 * gameObjects[j].Rigidbody.Mass);
+                    gameObjects[j].Rigidbody.Impulse += -velocityNormal / (2 * gameObjects[i].Rigidbody.Mass);
                 }
             }
 
@@ -127,7 +126,6 @@ namespace Assignment3
             foreach (GameObject gameObject in gameObjects)
             {
                 gameObject.Draw();
-                _spriteBatch.DrawString(font, gameObject.Transform.LocalPosition.ToString(), new Vector2(400, 10), Color.Black);
             }
 
             _spriteBatch.DrawString(font, "SHIFT - Show/Hide Details", new Vector2(5, 10), Color.Black);
@@ -146,25 +144,28 @@ namespace Assignment3
         private void AddGameObject()
         {
             GameObject gameObject = new GameObject();
-
-            // create new Rigidbody
-            Rigidbody rigidbody = new Rigidbody();
-            rigidbody.Mass = (float)random.NextDouble();
+            gameObject.Transform.LocalPosition = new Vector3((float)random.NextDouble() * boxCollider.Size, 
+                                                             (float)random.NextDouble() * boxCollider.Size, 
+                                                             (float)random.NextDouble() * boxCollider.Size
+                                                            );
 
             // set the direction and velocity
             Vector3 direction = new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
             direction.Normalize();
+
+            // create new Rigidbody
+            Rigidbody rigidbody = new Rigidbody();
+            rigidbody.Mass = (float)random.NextDouble()*5 + 1;
             rigidbody.Velocity = direction * ((float)random.NextDouble() * 5 + 10);
             gameObject.Add<Rigidbody>(rigidbody);
 
             // Create new sphereCollider
             SphereCollider sphereCollider = new SphereCollider();
             sphereCollider.Radius = 1.0f;
-            sphereCollider.Transform = rigidbody.Transform;
             gameObject.Add<Collider>(sphereCollider);
 
-            // Lab 7-E
-            Renderer renderer = new Renderer(sphereModel, rigidbody.Transform, camera, light, Content, GraphicsDevice, 20f, Content.Load<Texture2D>("Square"), "SimpleShading", 1);
+            // New renderer
+            Renderer renderer = new Renderer(sphereModel, gameObject.Transform, camera, light, Content, GraphicsDevice, 20f, Content.Load<Texture2D>("Square"), "SimpleShading", 1);
             gameObject.Add<Renderer>(renderer);
 
             // Adding the game object to the list
