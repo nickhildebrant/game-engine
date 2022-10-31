@@ -131,15 +131,15 @@ namespace CPI311.Labs
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            /*for (int i = 0; i < transforms.Count; i++)
+            for (int i = 0; i < transforms.Count; i++)
             {
                 float speed = rigidbodies[i].Velocity.Length();
                 float speedValue = MathHelper.Clamp(speed / 20f, 0, 1);
                 (model.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, speedValue, 1);
                 model.Draw(transforms[i].World, camera.View, camera.Projection);
-            }*/
+            }
 
-            for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
+            //for (int i = 0; i < renderers.Count; i++) renderers[i].Draw();
 
             _spriteBatch.Begin();
             _spriteBatch.DrawString(font, "lastSecondCollion = " + lastSecondCollision, new Vector2(5, 10), Color.Black);

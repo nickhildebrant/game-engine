@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using CPI311.GameEngine;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace Assignment3
@@ -18,10 +19,11 @@ namespace Assignment3
         Random random = new Random();
         
         bool isShowing = true;
+        bool renderingColor = false;
         int numSpheres = 1;
         float speed = 1.0f;
 
-        float averageFrames = 60;
+        float frameTotal, averageFrames = 60;
         Queue<float> frameRates = new Queue<float>();
 
         int averageCollisions = 0;
@@ -66,6 +68,12 @@ namespace Assignment3
 
             sphereModel = Content.Load<Model>("Sphere");
 
+            // **** Lighting ****
+            foreach (ModelMesh mesh in sphereModel.Meshes)
+                foreach (BasicEffect effect in mesh.Effects)
+                    effect.EnableDefaultLighting();
+            // ******************
+
             camera = new Camera();
             Transform cameraTransform = new Transform();
             cameraTransform.LocalPosition = Vector3.Backward * 20;
@@ -106,11 +114,22 @@ namespace Assignment3
             if (InputManager.IsKeyDown(Keys.Up)) { numSpheres++; AddGameObject(); }
             if (InputManager.IsKeyDown(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
 
+            // Toggles Color rendering
+            if(InputManager.IsKeyPressed(Keys.Space))
+            {
+                renderingColor = true;
+            }
+
+            // Toggles texure rendering
+            if(InputManager.IsKeyPressed(Keys.LeftAlt) || InputManager.IsKeyPressed(Keys.RightAlt))
+            {
+                renderingColor = false;
+            }
+
             // Update each GameObject
             foreach (GameObject gameObject in gameObjects)
             {
                 gameObject.Update();
-                gameObject.Rigidbody.Velocity *= speed;
             }
 
             Vector3 normal; // it is updated if a collision happens
@@ -147,7 +166,8 @@ namespace Assignment3
                     totalCollisions += count;
                 }
 
-                averageCollisions = totalCollisions / 5;
+                averageCollisions = numberCollisions / 5;
+                numberCollisions = 0;
 
                 System.Threading.Thread.Sleep(5000);
             }
@@ -158,27 +178,36 @@ namespace Assignment3
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
 
-            if (frameRates.Count == 10)
+            if (frameRates.Count >= 10)
             {
+                frameTotal -= frameRates.Peek();
                 frameRates.Dequeue();
             }
 
-            if (Time.TotalGameTime.Seconds % 1 == 0) frameRates.Enqueue(1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds);
+            //Debug.WriteLine(1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (Time.TotalGameTime.Seconds % 1 == 0)
+            {
+                var newCount = 1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds;
+                frameTotal += newCount;
+                frameRates.Enqueue(newCount);
+            }
 
             if (Time.TotalGameTime.Seconds % 10 == 0)
             {
-                float frameTotal = 0;
-                foreach (float count in frameRates)
-                {
-                    frameTotal += count;
-                }
-
-                averageFrames = frameTotal / frameRates.Count;
+                averageFrames = 1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
 
             foreach (GameObject gameObject in gameObjects)
             {
-                gameObject.Draw();
+                if (renderingColor)
+                {
+                    float speed = gameObject.Rigidbody.Velocity.Length();
+                    float speedValue = MathHelper.Clamp(speed / 50f, 0, 1);
+                    (sphereModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, speedValue, speedValue);
+                    sphereModel.Draw(gameObject.Transform.World, camera.View, camera.Projection);
+                }
+                else gameObject.Draw();
             }
 
             _spriteBatch.DrawString(font, "SHIFT - Show/Hide Details", new Vector2(5, 10), Color.Black);
@@ -187,8 +216,8 @@ namespace Assignment3
             {
                 _spriteBatch.DrawString(font, "Arrows (LEFT/RIGHT) - Speed: " + speed.ToString("0.0"), new Vector2(5, 25), Color.Black);
                 _spriteBatch.DrawString(font, "Arrows (UP/DOWN) - # of Spheres: " + numSpheres, new Vector2(5, 40), Color.Black);
-                _spriteBatch.DrawString(font, "Average Frame Rate: " + averageFrames.ToString("0.0"), new Vector2(5, 55), Color.Black);
-                _spriteBatch.DrawString(font, "Average Collisions: " + averageCollisions, new Vector2(5, 70), Color.Black);
+                _spriteBatch.DrawString(font, "Average Frame Rate (10s): " + averageFrames.ToString("0.00"), new Vector2(5, 55), Color.Black);
+                _spriteBatch.DrawString(font, "Average Collisions (5s): " + averageCollisions, new Vector2(5, 70), Color.Black);
                 _spriteBatch.DrawString(font, "SPACE - Show Speed Colors", new Vector2(5, 85), Color.Black);
                 _spriteBatch.DrawString(font, "ALT - Show Textures", new Vector2(5, 100), Color.Black);
                 
