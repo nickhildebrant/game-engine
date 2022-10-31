@@ -22,6 +22,41 @@ namespace CPI311.GameEngine
             return base.Collides(other, out normal);
         }
 
+        public bool SweptCollides(Collider other, Vector3 otherLastPosition, Vector3 lastPosition, out Vector3 normal)
+        {
+            if (other is SphereCollider)
+            {
+                SphereCollider collider = other as SphereCollider;
+
+                // calculate the vectors for two spheres
+                Vector3 vp = Transform.Position - lastPosition;
+                Vector3 vq = collider.Transform.Position - otherLastPosition;
+
+                // calculate the A and B (refer to the white board)
+                Vector3 A = lastPosition - otherLastPosition;
+                Vector3 B = vp - vq;
+
+                // calculate the a, b, and c
+                float a = Vector3.Dot(B, B);
+                float b = 2 * Vector3.Dot(A, B);
+                float c = Vector3.Dot(A, A) - (float)System.Math.Pow(Radius + collider.Radius, 2);
+                float disc = (float)System.Math.Pow(b, 2) - 4 * a * c; // discriminant (b^2 – 4ac)
+
+                if (disc >= 0)
+                {
+                    float t = (-b + (float)System.Math.Sqrt((double)disc)) / (2 * a);
+                    Vector3 p = lastPosition + t * vp;
+                    Vector3 q = otherLastPosition + t * vq;
+                    Vector3 intersect = Vector3.Lerp(p, q, this.Radius / (this.Radius + collider.Radius));
+                    normal = Vector3.Normalize(p - q);
+                    return true;
+                }
+            }
+            else if (other is BoxCollider) return other.Collides(this, out normal);
+
+            return base.Collides(other, out normal);
+        }
+
         // Lab 8 Extension for Raycasting
         public override float? Intersects(Ray ray)
         {

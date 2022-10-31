@@ -145,7 +145,10 @@ namespace Assignment3
 
                 for (int j = i + 1; j < gameObjects.Count; j++)
                 {
-                    if (gameObjects[i].Collider.Collides(gameObjects[j].Collider, out normal)) numberCollisions++;
+                    if (((SphereCollider)gameObjects[i].Collider).SweptCollides(gameObjects[j].Collider, 
+                        gameObjects[j].Collider.Transform.Position - gameObjects[j].Rigidbody.Velocity, 
+                        gameObjects[i].Collider.Transform.Position - gameObjects[i].Rigidbody.Velocity, out normal)) 
+                        numberCollisions++;
 
                     Vector3 velocityNormal = Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity - gameObjects[j].Rigidbody.Velocity) * -2 * gameObjects[i].Rigidbody.Mass * gameObjects[j].Rigidbody.Mass * normal;
                     gameObjects[i].Rigidbody.Impulse += velocityNormal / (2 * gameObjects[j].Rigidbody.Mass);
