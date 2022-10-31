@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Assignment3
 {
@@ -93,7 +94,7 @@ namespace Assignment3
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            Time.Update(gameTime);
+            Time.Update(gameTime, speed);
             InputManager.Update();
 
             if (collisions.Count == 5)
@@ -111,8 +112,8 @@ namespace Assignment3
             if (InputManager.IsKeyDown(Keys.Left) && speed > 0.1f) speed -= Time.ElapsedGameTime;
 
             // UP/DOWN add or removes spheres
-            if (InputManager.IsKeyDown(Keys.Up)) { numSpheres++; AddGameObject(); }
-            if (InputManager.IsKeyDown(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
+            if (InputManager.IsKeyPressed(Keys.Up)) { numSpheres++; AddGameObject(); }
+            if (InputManager.IsKeyPressed(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
 
             // Toggles Color rendering
             if(InputManager.IsKeyPressed(Keys.Space))
@@ -176,6 +177,7 @@ namespace Assignment3
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = new DepthStencilState();
             _spriteBatch.Begin();
 
             if (frameRates.Count >= 10)
@@ -203,7 +205,7 @@ namespace Assignment3
                 if (renderingColor)
                 {
                     float speed = gameObject.Rigidbody.Velocity.Length();
-                    float speedValue = MathHelper.Clamp(speed / 50f, 0, 1);
+                    float speedValue = MathHelper.Clamp(speed / 35f, 0, 1);
                     (sphereModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, speedValue, speedValue);
                     sphereModel.Draw(gameObject.Transform.World, camera.View, camera.Projection);
                 }

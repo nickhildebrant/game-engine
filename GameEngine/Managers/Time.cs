@@ -19,5 +19,11 @@ namespace CPI311.GameEngine
             ElapsedGameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             TotalGameTime = gameTime.TotalGameTime;
         }
+
+        public static void Update(GameTime gameTime, float speed)
+        {
+            ElapsedGameTime = (float)gameTime.ElapsedGameTime.TotalSeconds * speed;
+            TotalGameTime = gameTime.TotalGameTime;
+        }
     }
 }
