@@ -5,9 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using CPI311.GameEngine;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
-using System.Security.Cryptography;
 
 namespace Assignment3
 {
@@ -36,7 +34,7 @@ namespace Assignment3
 
         Camera camera;
         Light light;
-        BoxCollider boxCollider;
+        BoxCollider boxCollider, boxCollider1;
         List<GameObject> gameObjects;
 
         public Assignment3()
@@ -65,7 +63,9 @@ namespace Assignment3
             font = Content.Load<SpriteFont>("font");
 
             boxCollider = new BoxCollider();
-            boxCollider.Size = 10;
+            boxCollider.Size = 20;
+            boxCollider1 = new BoxCollider();
+            boxCollider1.Size = 22;
 
             sphereModel = Content.Load<Model>("Sphere");
 
@@ -77,7 +77,7 @@ namespace Assignment3
 
             camera = new Camera();
             Transform cameraTransform = new Transform();
-            cameraTransform.LocalPosition = Vector3.Backward * 20;
+            cameraTransform.LocalPosition = Vector3.Backward * 40;
             camera.Transform = cameraTransform;
 
             light = new Light();
@@ -137,10 +137,19 @@ namespace Assignment3
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 // Colliding with box collider
-                if (boxCollider.Collides(gameObjects[i].Collider, out normal))
+                if (gameObjects[i].Collider.Collides(boxCollider, out normal))
                 {
                     numberCollisions++;
-                    if (Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) < 0) gameObjects[i].Rigidbody.Impulse += Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) * -(2*gameObjects[i].Rigidbody.Mass) * normal;
+                    if (Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) < 0) 
+                        gameObjects[i].Rigidbody.Impulse += Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) * -(2*gameObjects[i].Rigidbody.Mass) * normal;
+                }
+
+                // Colliding with box collider1
+                if (gameObjects[i].Collider.Collides(boxCollider1, out normal))
+                {
+                    numberCollisions++;
+                    if (Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) < 0)
+                        gameObjects[i].Rigidbody.Impulse += Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity) * -(2 * gameObjects[i].Rigidbody.Mass) * normal;
                 }
 
                 for (int j = i + 1; j < gameObjects.Count; j++)
@@ -150,7 +159,8 @@ namespace Assignment3
                         gameObjects[i].Collider.Transform.Position - gameObjects[i].Rigidbody.Velocity, out normal)) 
                         numberCollisions++;
 
-                    Vector3 velocityNormal = Vector3.Dot(normal, gameObjects[i].Rigidbody.Velocity - gameObjects[j].Rigidbody.Velocity) * -2 * gameObjects[i].Rigidbody.Mass * gameObjects[j].Rigidbody.Mass * normal;
+                    Vector3 velocityNormal = Vector3.Dot(normal, 
+                        gameObjects[i].Rigidbody.Velocity - gameObjects[j].Rigidbody.Velocity) * -2 * gameObjects[i].Rigidbody.Mass * gameObjects[j].Rigidbody.Mass * normal;
                     gameObjects[i].Rigidbody.Impulse += velocityNormal / (2 * gameObjects[j].Rigidbody.Mass);
                     gameObjects[j].Rigidbody.Impulse += -velocityNormal / (2 * gameObjects[i].Rigidbody.Mass);
                 }
@@ -203,13 +213,14 @@ namespace Assignment3
                 averageFrames = 1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
 
+            // Changes the color of the spheres based on the speed
             foreach (GameObject gameObject in gameObjects)
             {
                 if (renderingColor)
                 {
                     float speed = gameObject.Rigidbody.Velocity.Length();
                     float speedValue = MathHelper.Clamp(speed / 35f, 0, 1);
-                    (sphereModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, speedValue, speedValue);
+                    (sphereModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = new Vector3(speedValue, 0.5f, 0.5f);
                     sphereModel.Draw(gameObject.Transform.World, camera.View, camera.Projection);
                 }
                 else gameObject.Draw();
@@ -241,9 +252,9 @@ namespace Assignment3
         private void AddGameObject()
         {
             GameObject gameObject = new GameObject();
-            gameObject.Transform.LocalPosition = new Vector3((float)random.NextDouble() * boxCollider.Size, 
-                                                             (float)random.NextDouble() * boxCollider.Size, 
-                                                             (float)random.NextDouble() * boxCollider.Size
+            gameObject.Transform.LocalPosition = new Vector3((float)random.NextDouble() * boxCollider.Size - (float)random.NextDouble() * boxCollider.Size, 
+                                                             (float)random.NextDouble() * boxCollider.Size - (float)random.NextDouble() * boxCollider.Size, 
+                                                             (float)random.NextDouble() * boxCollider.Size - (float)random.NextDouble() * boxCollider.Size
                                                             );
 
             // set the direction and velocity
@@ -252,7 +263,7 @@ namespace Assignment3
 
             // create new Rigidbody
             Rigidbody rigidbody = new Rigidbody();
-            rigidbody.Mass = (float)random.NextDouble()*5 + 1;
+            rigidbody.Mass = (float)random.NextDouble()*2 + 1;
             rigidbody.Velocity = direction * ((float)random.NextDouble() * 5 + 10);
             gameObject.Add<Rigidbody>(rigidbody);
 
