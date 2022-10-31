@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using CPI311.GameEngine;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading;
 
 namespace Assignment3
 {
@@ -16,11 +16,18 @@ namespace Assignment3
         SpriteFont font;
 
         Random random = new Random();
-        int numberCollisions = 0;
-
+        
         bool isShowing = true;
         int numSpheres = 1;
         float speed = 1.0f;
+
+        float averageFrames = 60;
+        Queue<float> frameRates = new Queue<float>();
+
+        int averageCollisions = 0;
+        Queue<int> collisions = new Queue<int>();
+        bool haveThreadRunning;
+        int numberCollisions = 0;
 
         Model sphereModel;
 
@@ -42,6 +49,9 @@ namespace Assignment3
             Time.Initialize();
             InputManager.Initialize();
             ScreenManager.Initialize(_graphics);
+
+            haveThreadRunning = true;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(CollisionReset));
 
             base.Initialize();
         }
@@ -78,6 +88,13 @@ namespace Assignment3
             Time.Update(gameTime);
             InputManager.Update();
 
+            if (collisions.Count == 5)
+            {
+                frameRates.Dequeue();
+            }
+
+            frameRates.Enqueue(numberCollisions);
+
             // Shift Hides info
             if (InputManager.IsKeyPressed(Keys.LeftShift) || InputManager.IsKeyPressed(Keys.RightShift)) isShowing = !isShowing;
 
@@ -86,13 +103,14 @@ namespace Assignment3
             if (InputManager.IsKeyDown(Keys.Left) && speed > 0.1f) speed -= Time.ElapsedGameTime;
 
             // UP/DOWN add or removes spheres
-            if (InputManager.IsKeyPressed(Keys.Up)) { numSpheres++; AddGameObject(); }
-            if (InputManager.IsKeyPressed(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
+            if (InputManager.IsKeyDown(Keys.Up)) { numSpheres++; AddGameObject(); }
+            if (InputManager.IsKeyDown(Keys.Down) && numSpheres > 0) { gameObjects.RemoveAt(numSpheres-1); numSpheres--; }
 
             // Update each GameObject
             foreach (GameObject gameObject in gameObjects)
             {
                 gameObject.Update();
+                gameObject.Rigidbody.Velocity *= speed;
             }
 
             Vector3 normal; // it is updated if a collision happens
@@ -118,10 +136,45 @@ namespace Assignment3
             base.Update(gameTime);
         }
 
+        private void CollisionReset(Object obj)
+        {
+            while (haveThreadRunning)
+            {
+  
+                int totalCollisions = 0;
+                foreach (int count in collisions)
+                {
+                    totalCollisions += count;
+                }
+
+                averageCollisions = totalCollisions / 5;
+
+                System.Threading.Thread.Sleep(5000);
+            }
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
+
+            if (frameRates.Count == 10)
+            {
+                frameRates.Dequeue();
+            }
+
+            if (Time.TotalGameTime.Seconds % 1 == 0) frameRates.Enqueue(1.0f / (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (Time.TotalGameTime.Seconds % 10 == 0)
+            {
+                float frameTotal = 0;
+                foreach (float count in frameRates)
+                {
+                    frameTotal += count;
+                }
+
+                averageFrames = frameTotal / frameRates.Count;
+            }
 
             foreach (GameObject gameObject in gameObjects)
             {
@@ -134,6 +187,16 @@ namespace Assignment3
             {
                 _spriteBatch.DrawString(font, "Arrows (LEFT/RIGHT) - Speed: " + speed.ToString("0.0"), new Vector2(5, 25), Color.Black);
                 _spriteBatch.DrawString(font, "Arrows (UP/DOWN) - # of Spheres: " + numSpheres, new Vector2(5, 40), Color.Black);
+                _spriteBatch.DrawString(font, "Average Frame Rate: " + averageFrames.ToString("0.0"), new Vector2(5, 55), Color.Black);
+                _spriteBatch.DrawString(font, "Average Collisions: " + averageCollisions, new Vector2(5, 70), Color.Black);
+                _spriteBatch.DrawString(font, "SPACE - Show Speed Colors", new Vector2(5, 85), Color.Black);
+                _spriteBatch.DrawString(font, "ALT - Show Textures", new Vector2(5, 100), Color.Black);
+                
+            }
+            else
+            {
+                _spriteBatch.DrawString(font, "SPACE - Show Speed Colors", new Vector2(5, 25), Color.Black);
+                _spriteBatch.DrawString(font, "ALT - Show Textures", new Vector2(5, 40), Color.Black);
             }
 
             _spriteBatch.End();
