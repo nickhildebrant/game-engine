@@ -37,3 +37,9 @@
 /processorParam:TextureFormat=Color
 /build:Normalmap.png
 
+#begin TerrainShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:TerrainShader.fx
+

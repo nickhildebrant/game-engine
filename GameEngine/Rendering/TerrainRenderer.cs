@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace CPI311.GameEngine.Rendering
 {
@@ -17,7 +18,7 @@ namespace CPI311.GameEngine.Rendering
         {
             HeightMap = texture;
             this.size = size;
-            CreateHeights(); //  heights[] data is crated 
+            //CreateHeights(); //  heights[] data is crated 
                              // We should also save the value of size somewhere
             int rows = (int)res.Y + 1;
             int cols = (int)res.X + 1;
@@ -35,7 +36,7 @@ namespace CPI311.GameEngine.Rendering
 
             }
 
-            Indices = new int[(rows – 1) * (cols – 1) * 6];
+            Indices = new int[(rows - 1) * (cols - 1) * 6];
             int index = 0;
             for (int r = 0; r < rows - 1; r++)
             {
@@ -51,6 +52,18 @@ namespace CPI311.GameEngine.Rendering
             }
         }
 
+        private void CreateHeights()
+        {
+            Color[] data = new Color[HeightMap.Width * HeightMap.Height];
+            HeightMap.GetData<Color>(data);
+            Heights = new float[HeightMap.Width * HeightMap.Height];
+
+            for (int i = 0; i < Heights.Length; i++)
+            {
+                Heights[i] = data[i].G / 255f;
+            }
+        }
+
         public float GetHeight(Vector2 tex)
         {
             // First, scale it to dimensions of the image
@@ -58,7 +71,10 @@ namespace CPI311.GameEngine.Rendering
             int x = (int)tex.X; float u = tex.X - x;
             int y = (int)tex.Y; float v = tex.Y - y;
 
-            return heights[y * HeightMap.Width + x] * (1 – u) * (1 - v) + heights[???] * u * (1 - v) + heights[???] * (1 – u ) * v + heights[???] * u * v;
+            return Heights[y * HeightMap.Width + x] * (1 - u) * (1 - v) + 
+                Heights[y * HeightMap.Width + Math.Min(x+1, HeightMap.Width-1)] * u * (1 - v) + 
+                Heights[???] * (1 - u) * v + 
+                Heights[???] * u * v;
         }
 
         public override void Draw()
