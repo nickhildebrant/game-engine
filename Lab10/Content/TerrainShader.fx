@@ -40,7 +40,7 @@ VertexOutput TerrainVertexShader(VertexInput input)
 	float4 viewPosition = mul(output.WorldPosition, View);
 	output.Position = mul(viewPosition, Projection);
 	// as well as the normal in world space
-	output.UV = input.UV * 10;
+	output.UV = input.UV * 100;
 	return output;
 }
 

@@ -37,20 +37,20 @@ namespace CPI311.Labs
 
             terrain = new TerrainRenderer(Content.Load<Texture2D>("Heightmap"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("Normalmap");
+
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 5, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 10, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
-            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0f,.2f,0f));
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(1f, 1f, 0f));
             effect.Parameters["SpecularColor"].SetValue(new Vector3(.1f, .1f, .1f));
             effect.Parameters["Shininess"].SetValue(20f);
+            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
 
             camera = new Camera();
             camera.Transform = new Transform();
-            //camera.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
-            //camera.Transform.Rotate(Vector3.Right, -MathHelper.PiOver4);
+            camera.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
         }
 
         protected override void Update(GameTime gameTime)
@@ -80,18 +80,14 @@ namespace CPI311.Labs
             effect.Parameters["World"].SetValue(terrain.Transform.World);
             effect.Parameters["View"].SetValue(camera.View);
             effect.Parameters["Projection"].SetValue(camera.Projection);
-            effect.Parameters["LightPosition"].SetValue(Vector3.Down * 10);
-            effect.Parameters["CameraPosition"].SetValue(camera.Transform.Position); 
+            effect.Parameters["LightPosition"].SetValue(camera.Transform.Position + Vector3.Up * 10);
+            effect.Parameters["CameraPosition"].SetValue(camera.Transform.Position);
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 terrain.Draw();
             }
-
-            _spriteBatch.Begin();
-
-            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
