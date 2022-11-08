@@ -8,6 +8,7 @@ float Shininess; // scalar value
 float3 AmbientColor;
 float3 DiffuseColor;
 float3 SpecularColor;
+
 texture NormalMap;
 
 sampler NormalMapSampler = sampler_state

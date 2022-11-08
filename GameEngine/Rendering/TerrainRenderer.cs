@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace CPI311.GameEngine.Rendering
+namespace CPI311.GameEngine
 {
     public class TerrainRenderer : Component
     {
@@ -18,6 +18,7 @@ namespace CPI311.GameEngine.Rendering
         {
             HeightMap = texture;
             this.size = size;
+
             CreateHeights(); //  heights[] data is crated 
                              
             int rows = (int)res.Y + 1;
@@ -48,9 +49,9 @@ namespace CPI311.GameEngine.Rendering
                     Indices[index++] = r * cols + c + 1;
                     Indices[index++] = (r + 1) * cols + c;
 
-                    Indices[index++] = (r + 1) * cols + (c + 1);
                     Indices[index++] = (r + 1) * cols + c;
                     Indices[index++] = r * cols + c + 1;
+                    Indices[index++] = (r + 1) * cols + c + 1;
                 }
             }
         }
@@ -75,7 +76,7 @@ namespace CPI311.GameEngine.Rendering
             int y = (int)tex.Y; float v = tex.Y - y;
 
             return Heights[y * HeightMap.Width + x] * (1 - u) * (1 - v) + 
-                Heights[y * HeightMap.Width + Math.Min(x+1, HeightMap.Width-1)] * u * (1 - v) +
+                Heights[y * HeightMap.Width + Math.Min(x + 1, HeightMap.Width - 1)] * u * (1 - v) +
                 Heights[Math.Min(y + 1, HeightMap.Height - 1) * HeightMap.Width + x] * (1 - u) * v +
                 Heights[Math.Min(y + 1, HeightMap.Height - 1) * HeightMap.Width + Math.Min(x + 1, HeightMap.Width - 1)] * u * v;
         }

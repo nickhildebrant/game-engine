@@ -1,5 +1,4 @@
 ﻿using CPI311.GameEngine;
-using CPI311.GameEngine.Rendering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -39,17 +38,18 @@ namespace CPI311.Labs
             terrain = new TerrainRenderer(Content.Load<Texture2D>("Heightmap"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("Normalmap");
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 20, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 5, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
+            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0f,.2f,0f));
-            //effect.Parameters["DiffuseColor"].SetValue(new Vector3(1f, 1f, 0));
-            //effect.Parameters["SpecularColor"].SetValue(new Vector3(1, 1, 1));
-            effect.Parameters["Shininess"].SetValue(.2f);
+            effect.Parameters["DiffuseColor"].SetValue(new Vector3(1f, 1f, 0f));
+            effect.Parameters["SpecularColor"].SetValue(new Vector3(.1f, .1f, .1f));
+            effect.Parameters["Shininess"].SetValue(20f);
 
             camera = new Camera();
             camera.Transform = new Transform();
-            camera.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
+            //camera.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
             //camera.Transform.Rotate(Vector3.Right, -MathHelper.PiOver4);
         }
 
@@ -60,16 +60,13 @@ namespace CPI311.Labs
             Time.Update(gameTime);
             InputManager.Update();
 
-            if (InputManager.IsKeyDown(Keys.W)) camera.Transform.LocalPosition += camera.Transform.Forward * Time.ElapsedGameTime;
-            if (InputManager.IsKeyDown(Keys.S)) camera.Transform.LocalPosition += camera.Transform.Backward * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.W)) camera.Transform.LocalPosition += 5 * camera.Transform.Forward * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.S)) camera.Transform.LocalPosition += 5 * camera.Transform.Backward * Time.ElapsedGameTime;
 
             if (InputManager.IsKeyDown(Keys.A)) camera.Transform.Rotate(Vector3.Up, Time.ElapsedGameTime);
             if (InputManager.IsKeyDown(Keys.D)) camera.Transform.Rotate(Vector3.Down, Time.ElapsedGameTime);
 
-            if (InputManager.IsKeyDown(Keys.Q)) camera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
-            if (InputManager.IsKeyDown(Keys.E)) camera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
-
-            camera.Transform.LocalPosition = new Vector3(camera.Transform.LocalPosition.X,terrain.GetAltitude(camera.Transform.LocalPosition),camera.Transform.LocalPosition.Z) + Vector3.Up;
+            camera.Transform.LocalPosition = new Vector3(camera.Transform.LocalPosition.X, terrain.GetAltitude(camera.Transform.LocalPosition), camera.Transform.LocalPosition.Z) + Vector3.Up;
 
             base.Update(gameTime);
         }
@@ -83,7 +80,7 @@ namespace CPI311.Labs
             effect.Parameters["World"].SetValue(terrain.Transform.World);
             effect.Parameters["View"].SetValue(camera.View);
             effect.Parameters["Projection"].SetValue(camera.Projection);
-            effect.Parameters["LightPosition"].SetValue(camera.Transform.Position + Vector3.Up * 10);
+            effect.Parameters["LightPosition"].SetValue(Vector3.Down * 10);
             effect.Parameters["CameraPosition"].SetValue(camera.Transform.Position); 
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
