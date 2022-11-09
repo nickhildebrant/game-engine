@@ -27,7 +27,6 @@ namespace CPI311.Labs
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Button exitButton;
         Texture2D texture;
         SpriteFont font;
         Color background = Color.CornflowerBlue;
@@ -59,12 +58,27 @@ namespace CPI311.Labs
 
             font = Content.Load<SpriteFont>("font");
 
-            exitButton = new Button();
-            exitButton.Texture = texture;
-            exitButton.Text = "Exit";
-            exitButton.Bounds = new Rectangle(50, 50, 300, 20);
-            exitButton.Action += ExitGame;
-            guiElements.Add(exitButton);
+            //Button exitButton = new Button();
+            //exitButton.Texture = texture;
+            //exitButton.Text = "Exit";
+            //exitButton.Bounds = new Rectangle(50, 50, 300, 20);
+            //exitButton.Action += ExitGame;
+            //guiElements.Add(exitButton);
+
+            Checkbox box = new Checkbox();
+            box.Texture = texture;
+            box.Box = texture;
+            box.Text = "Switch Scene";
+            box.Bounds = new Rectangle(50, 50, 300, 50);
+            box.Action += SwitchScenes;
+            guiElements.Add(box);
+
+            Button fullButton = new Button();
+            fullButton.Text = "Fullscreen Mode";
+            fullButton.Texture = texture;
+            fullButton.Bounds = new Rectangle(50, 200, 300, 10);
+            fullButton.Action += FullScreen;
+            guiElements.Add(fullButton);
 
             scenes.Add("Menu", new Scene(MainMenuUpdate, MainMenuDraw));
             scenes.Add("Play", new Scene(PlayUpdate, PlayDraw));
@@ -77,8 +91,6 @@ namespace CPI311.Labs
 
             Time.Update(gameTime);
             InputManager.Update();
-
-            exitButton.Update();
 
             currentScene.Update();
 
@@ -96,6 +108,17 @@ namespace CPI311.Labs
             currentScene.Draw();
 
             base.Draw(gameTime);
+        }
+
+        void SwitchScenes(GUIElement element)
+        {
+            currentScene = (currentScene == scenes["Play"] ? scenes["Menu"] : scenes["Play"]);
+        }
+
+        void FullScreen(GUIElement element)
+        {
+            //ScreenManager.Setup(1920, 1080);
+            ScreenManager.IsFullScreen = !ScreenManager.IsFullScreen;
         }
 
         void ExitGame(GUIElement element)

@@ -34,7 +34,7 @@ namespace CPI311.GameEngine
             {
                 for (int c = 0; c < cols; c++)
                 {
-                    Vertices[r * cols + c] = new VertexPositionTexture(offset + new Vector3(c * stepX, 0, r * stepZ), new Vector2(c / res.X, r / res.Y));
+                    Vertices[r * cols + c] = new VertexPositionTexture(offset + new Vector3(c * stepX, GetHeight(new Vector2(c / res.X, r / res.Y)), r * stepZ), new Vector2(c / res.X, r / res.Y));
                 }
 
             }
