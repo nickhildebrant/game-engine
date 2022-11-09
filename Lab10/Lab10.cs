@@ -36,8 +36,8 @@ namespace CPI311.Labs
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             terrain = new TerrainRenderer(Content.Load<Texture2D>("Heightmap"), Vector2.One * 100, Vector2.One * 200);
-            terrain.NormalMap = Content.Load<Texture2D>("Normalmap");
 
+            terrain.NormalMap = Content.Load<Texture2D>("Normalmap");
             terrain.Transform = new Transform();
             terrain.Transform.LocalScale *= new Vector3(1, 10, 1);
 
@@ -46,7 +46,6 @@ namespace CPI311.Labs
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(1f, 1f, 0f));
             effect.Parameters["SpecularColor"].SetValue(new Vector3(.1f, .1f, .1f));
             effect.Parameters["Shininess"].SetValue(20f);
-            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
 
             camera = new Camera();
             camera.Transform = new Transform();
@@ -76,12 +75,12 @@ namespace CPI311.Labs
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
-            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
-            effect.Parameters["World"].SetValue(terrain.Transform.World);
             effect.Parameters["View"].SetValue(camera.View);
             effect.Parameters["Projection"].SetValue(camera.Projection);
-            effect.Parameters["LightPosition"].SetValue(camera.Transform.Position + Vector3.Up * 10);
+            effect.Parameters["World"].SetValue(terrain.Transform.World);
             effect.Parameters["CameraPosition"].SetValue(camera.Transform.Position);
+            effect.Parameters["LightPosition"].SetValue(camera.Transform.Position + Vector3.Up * 10);
+            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {

@@ -32,8 +32,12 @@ namespace CPI311.GameEngine
 
         public static bool IsKeyPressed(Keys key)
         {
-            return CurrentKeyboardState.IsKeyDown(key) &&
-                PreviousKeyboardState.IsKeyUp(key);
+            return CurrentKeyboardState.IsKeyDown(key) && PreviousKeyboardState.IsKeyUp(key);
+        }
+
+        public static bool IsKeyReleased(Keys key)
+        {
+            return CurrentKeyboardState.IsKeyUp(key) && PreviousKeyboardState.IsKeyDown(key);
         }
 
         /// <summary>
