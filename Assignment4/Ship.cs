@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Metadata;
+using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,50 +8,47 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GoingBeyond4
 {
-    class Ship
+    class Ship : GameObject
     {
-        public Model Model;
-        public Matrix[] Transforms;
-
-        //Position of the model in world space
-        public Vector3 Position = Vector3.Zero;
-
-        //Velocity of the model, applied each frame to the model's position
-        public Vector3 Velocity = Vector3.Zero;
-
-        public Matrix RotationMatrix = Matrix.Identity;
-        private float rotation = 0.0f;
-        public float Rotation
+        public Ship(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
         {
-            get { return rotation; }
-            set
-            {
-                float newVal = value;
-                while (newVal >= MathHelper.TwoPi)
-                {
-                    newVal -= MathHelper.TwoPi;
-                }
-                while (newVal < 0)
-                {
-                    newVal += MathHelper.TwoPi;
-                }
+            // *** Add Rigidbody
+            Rigidbody rigidbody = new Rigidbody();
+            rigidbody.Transform = Transform;
+            rigidbody.Mass = 1;
+            Add<Rigidbody>(rigidbody);
+            // *** Add Renderer
+            Texture2D texture = Content.Load<Texture2D>("wedge_p1_diff_v1");
+            Renderer renderer = new Renderer(Content.Load<Model>("p1_wedge"), Transform, camera, light, Content, graphicsDevice, 20f, texture, null, 1);
+            Add<Renderer>(renderer);
 
-                if (rotation != newVal)
-                {
-                    rotation = newVal;
-                    RotationMatrix = Matrix.CreateRotationY(rotation);
-                }
-
-            }
+            // *** Add collider
+            SphereCollider sphereCollider = new SphereCollider();
+            sphereCollider.Radius = renderer.ObjectModel.Meshes[0].BoundingSphere.Radius;
+            sphereCollider.Transform = Transform;
+            Add<Collider>(sphereCollider);
         }
 
-        public void Update(GamePadState controllerState)
+        public override void Update()
         {
-            // Rotate the model using the left thumbstick, and scale it down.
-            Rotation -= controllerState.ThumbSticks.Left.X * 0.10f;
+            if(InputManager.IsKeyPressed(Keys.W))
+            {
 
-            // Finally, add this vector to our velocity.
-            Velocity += RotationMatrix.Forward * 1.0f * controllerState.Triggers.Right;
+            }
+            if (InputManager.IsKeyPressed(Keys.A))
+            {
+
+            }
+            if (InputManager.IsKeyPressed(Keys.S))
+            {
+
+            }
+            if (InputManager.IsKeyPressed(Keys.D))
+            {
+
+            }
+
+            base.Update();
         }
     }
 }

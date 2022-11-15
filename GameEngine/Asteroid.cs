@@ -6,11 +6,11 @@ using System;
 
 namespace Assignment4
 {
-    public class Bullet : GameObject
+    public class Asteroid : GameObject
     {
         public bool isActive { get; set; }
 
-        public Bullet(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
+        public Asteroid(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
         {
             // *** Add Rigidbody
             Rigidbody rigidbody = new Rigidbody();
@@ -18,8 +18,8 @@ namespace Assignment4
             rigidbody.Mass = 1;
             Add<Rigidbody>(rigidbody);
             // *** Add Renderer
-            Texture2D texture = Content.Load<Texture2D>("pea_proj");
-            Renderer renderer = new Renderer(Content.Load<Model>("bullet"), Transform, camera, light, Content, graphicsDevice, 20f, texture, null, 1);
+            Texture2D texture = Content.Load<Texture2D>("asteroid1");
+            Renderer renderer = new Renderer(Content.Load<Model>("asteroid4"), Transform, camera, light, Content, graphicsDevice, 20f, texture, null, 1);
             Add<Renderer>(renderer);
 
             // *** Add collider

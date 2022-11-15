@@ -26,8 +26,8 @@ namespace CPI311.GameEngine
             Drawables = new List<IDrawable> { };
         }
 
-        public void Update() { foreach (IUpdateable component in Updateables) component.Update(); }
-        public void Draw() { foreach (IRenderable component in Renderables) component.Draw(); }
+        public virtual void Update() { foreach (IUpdateable component in Updateables) component.Update(); }
+        public virtual void Draw() { foreach (IRenderable component in Renderables) component.Draw(); }
         public void Draw(SpriteBatch spritebatch) { foreach(IDrawable component in Drawables) component.Draw(spritebatch); }
 
         public T Add<T>() where T : Component, new()
