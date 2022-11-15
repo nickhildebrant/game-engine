@@ -8,6 +8,8 @@ namespace Assignment4
 {
     public class Asteroid : GameObject
     {
+        public Model Model;
+
         public bool isActive { get; set; }
 
         public Asteroid(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
@@ -19,7 +21,8 @@ namespace Assignment4
             Add<Rigidbody>(rigidbody);
             // *** Add Renderer
             Texture2D texture = Content.Load<Texture2D>("asteroid1");
-            Renderer renderer = new Renderer(Content.Load<Model>("asteroid4"), Transform, camera, light, Content, graphicsDevice, 20f, texture, null, 1);
+            Model = Content.Load<Model>("asteroid4");
+            Renderer renderer = new Renderer(Model, Transform, camera, light, Content, graphicsDevice, 20f, texture, null, 1);
             Add<Renderer>(renderer);
 
             // *** Add collider

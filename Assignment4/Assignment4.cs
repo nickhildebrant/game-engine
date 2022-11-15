@@ -21,6 +21,9 @@ namespace Assignment4
         //Audio components
         SoundEffect gunSound;
         SoundEffectInstance soundInstance;
+        SoundEffect soundExplosion2;
+        SoundEffect soundExplosion3;
+        SoundEffect engineSound;
 
         //Visual components
         Ship ship;
@@ -53,6 +56,7 @@ namespace Assignment4
 
             camera = new Camera();
             camera.Transform = new Transform();
+            camera.Transform.Position = new Vector3(0f, 0f, GameConstants.CameraHeight);
 
             light = new Light();
             light.Transform = new Transform();
@@ -70,6 +74,12 @@ namespace Assignment4
             ship = new Ship(Content, camera, GraphicsDevice, light);
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i] = new Bullet(Content, camera, GraphicsDevice, light);
             ResetAsteroids(); // look at the below private method
+
+            // Sound effects
+            gunSound = Content.Load<SoundEffect>("tx0_fire1");
+            soundExplosion2 = Content.Load<SoundEffect>("explosion2");
+            soundExplosion3 = Content.Load<SoundEffect>("explosion3");
+            engineSound = Content.Load<SoundEffect>("engine_2");
 
             // *** Particle
             particleManager = new ParticleManager(GraphicsDevice, 100);
@@ -107,6 +117,45 @@ namespace Assignment4
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Update();
             for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Update();
 
+            camera.Transform.Position = new Vector3(ship.Transform.Position.X, ship.Transform.Position.Y, GameConstants.CameraHeight);
+
+            ////ship-asteroid collision check
+            //BoundingSphere shipSphere = new BoundingSphere(ship.Transform.Position, ship.Model.Meshes[0].BoundingSphere.Radius * GameConstants.ShipBoundingSphereScale);
+            //for (int i = 0; i < asteroidList.Length; i++)
+            //{
+            //    BoundingSphere b = new BoundingSphere(asteroidList[i].Transform.Position, asteroidList[i].Model.Meshes[0].BoundingSphere.Radius * GameConstants.AsteroidBoundingSphereScale);
+
+            //    if (b.Intersects(shipSphere))
+            //    {
+            //        //blow up ship
+            //        soundExplosion3.Play();
+            //        break; //exit the loop
+            //    }
+            //}
+
+            ////bullet-asteroid collision check
+            //for (int i = 0; i < asteroidList.Length; i++)
+            //{
+            //    if (asteroidList[i].isActive)
+            //    {
+            //        BoundingSphere asteroidSphere = new BoundingSphere(asteroidList[i].Transform.Position, asteroidList[i].Model.Meshes[0].BoundingSphere.Radius * GameConstants.AsteroidBoundingSphereScale);
+            //        for (int j = 0; j < bulletList.Length; j++)
+            //        {
+            //            if (bulletList[j].isActive)
+            //            {
+            //                BoundingSphere bulletSphere = new BoundingSphere(bulletList[j].Transform.Position, bulletList[j].Model.Meshes[0].BoundingSphere.Radius);
+            //                if (asteroidSphere.Intersects(bulletSphere))
+            //                {
+            //                    soundExplosion2.Play();
+            //                    asteroidList[i].isActive = false;
+            //                    bulletList[j].isActive = false;
+            //                    break; //no need to check other bullets
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
             if (InputManager.IsMouseClicked(0))
             {
                 for (int i = 0; i < GameConstants.NumBullets; i++)
@@ -126,6 +175,8 @@ namespace Assignment4
                     }
                 }
             }
+
+            //if (Math.Abs((double)ship.Rigidbody.Velocity.Length()) > 0) engineSound.Play();
 
             Vector3 normal;
             for (int i = 0; i < asteroidList.Length; i++)
