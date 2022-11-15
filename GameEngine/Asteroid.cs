@@ -12,6 +12,10 @@ namespace Assignment4
 
         public bool isActive { get; set; }
 
+        public Vector3 position;
+        public Vector3 direction;
+        public float speed;
+
         public Asteroid(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
         {
             // *** Add Rigidbody
@@ -19,6 +23,7 @@ namespace Assignment4
             rigidbody.Transform = Transform;
             rigidbody.Mass = 1;
             Add<Rigidbody>(rigidbody);
+
             // *** Add Renderer
             Texture2D texture = Content.Load<Texture2D>("asteroid1");
             Model = Content.Load<Model>("asteroid4");
@@ -36,18 +41,36 @@ namespace Assignment4
 
         public override void Update()
         {
-            if (!isActive) return;
-
-            if (Transform.Position.X > GameConstants.PlayfieldSizeX ||
-               Transform.Position.X < -GameConstants.PlayfieldSizeX ||
-               Transform.Position.Z > GameConstants.PlayfieldSizeY ||
-               Transform.Position.Z < -GameConstants.PlayfieldSizeY)
+            if (this.Transform.Position.X > GameConstants.PlayfieldSizeX)
             {
-                isActive = false;
-                Rigidbody.Velocity = Vector3.Zero; // stop moving
+                this.Transform.LocalPosition -= Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX;
+            }
+
+            if (this.Transform.Position.X < -GameConstants.PlayfieldSizeX)
+            {
+                this.Transform.LocalPosition += Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX;
+            }
+
+            if (this.Transform.Position.Y > GameConstants.PlayfieldSizeY)
+            {
+                this.Transform.LocalPosition -= Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY;
+            }
+
+            if (this.Transform.Position.Y < -GameConstants.PlayfieldSizeY)
+            {
+                this.Transform.LocalPosition += Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY;
             }
 
             base.Update();
+        }
+
+        public void Update(float delta)
+        {
+            position += direction * speed * GameConstants.AsteroidSpeedAdjustment * delta;
+            if (position.X > GameConstants.PlayfieldSizeX) position.X -= 2 * GameConstants.PlayfieldSizeX;
+            if (position.X < -GameConstants.PlayfieldSizeX) position.X += 2 * GameConstants.PlayfieldSizeX;
+            if (position.Y > GameConstants.PlayfieldSizeY) position.Y -= 2 * GameConstants.PlayfieldSizeY;
+            if (position.Y < -GameConstants.PlayfieldSizeY) position.Y += 2 * GameConstants.PlayfieldSizeY;
         }
 
         public override void Draw()

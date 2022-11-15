@@ -17,6 +17,8 @@ namespace Assignment4
 
         Camera camera;
         Light light;
+        Matrix projectionMatrix;
+        Matrix viewMatrix;
 
         //Audio components
         SoundEffect gunSound;
@@ -27,11 +29,13 @@ namespace Assignment4
 
         //Visual components
         Ship ship;
+        Asteroid asteroid;
+        Bullet bullet;
         Asteroid[] asteroidList = new Asteroid[GameConstants.NumAsteroids];
         Bullet[] bulletList = new Bullet[GameConstants.NumBullets];
 
         //Score & background
-        int score = 0;
+        int score = 0, playerHealth = 5;
         Texture2D stars;
         SpriteFont lucidaConsole;
         Vector2 scorePosition = new Vector2(100, 50);
@@ -56,10 +60,22 @@ namespace Assignment4
 
             camera = new Camera();
             camera.Transform = new Transform();
-            camera.Transform.Position = new Vector3(0f, 0f, GameConstants.CameraHeight);
+            camera.Transform.Position = new Vector3(0.0f, 0.0f, GameConstants.CameraHeight);
+            camera.FieldOfView = MathHelper.ToRadians(45.0f);
+            camera.AspectRatio = GraphicsDevice.DisplayMode.AspectRatio;
+            camera.NearPlane = 10000.0f;
+            camera.FarPlane = 30000.0f;
+
+            asteroid = new Asteroid(Content, camera, GraphicsDevice, light);
+            //asteroid.Transform.LocalPosition = new Vector3(500, 0, 500);
+            asteroid.Transform.LocalScale = new Vector3(3.0f, 3.0f, 3.0f);
+
+            viewMatrix = Matrix.CreateLookAt(camera.Transform.Position, Vector3.Zero, Vector3.Up);
 
             light = new Light();
             light.Transform = new Transform();
+
+            bullet = new Bullet(Content, camera, GraphicsDevice, light);
 
             base.Initialize();
         }
@@ -69,9 +85,11 @@ namespace Assignment4
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             stars = Content.Load<Texture2D>("b1_stars");
-            //lucidaConsole = Content.Load<SpriteFont>("")
+            lucidaConsole = Content.Load<SpriteFont>("font");
 
             ship = new Ship(Content, camera, GraphicsDevice, light);
+            ship.Transform.LocalScale = new Vector3(0.2f, 0.2f, 0.2f);
+
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i] = new Bullet(Content, camera, GraphicsDevice, light);
             ResetAsteroids(); // look at the below private method
 
@@ -98,64 +116,39 @@ namespace Assignment4
 
                 yStart = (float)random.NextDouble() * GameConstants.PlayfieldSizeY;
                 asteroidList[i] = new Asteroid(Content, camera, GraphicsDevice, light);
-                asteroidList[i].Transform.Position = new Vector3(0, 0.0f, 0);
+                asteroidList[i].Transform.Position = new Vector3(xStart, yStart, ship.Transform.Position.Z);
                 double angle = random.NextDouble() * 2 * Math.PI;
-                asteroidList[i].Rigidbody.Velocity = new Vector3(
-                    -(float)Math.Sin(angle), 0, (float)Math.Cos(angle)) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed);
+                asteroidList[i].Rigidbody.Velocity = new Vector3((-(float)Math.Cos(angle)) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed), ((float)Math.Cos(angle)) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed), 0);
                 asteroidList[i].isActive = true;
             }
         }
 
+        private Matrix[] SetupEffectDefaults(Model myModel)
+        {
+            Matrix[] absoluteTransforms = new Matrix[myModel.Bones.Count];
+            myModel.CopyAbsoluteBoneTransformsTo(absoluteTransforms);
+            foreach (ModelMesh mesh in myModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.Projection = projectionMatrix;
+                    effect.View = viewMatrix;
+                }
+            }
+            return absoluteTransforms;
+        }
+
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             InputManager.Update();
             Time.Update(gameTime);
             ship.Update();
 
-            for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Update();
-            for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Update();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            camera.Transform.Position = new Vector3(ship.Transform.Position.X, ship.Transform.Position.Y, GameConstants.CameraHeight);
-
-            ////ship-asteroid collision check
-            //BoundingSphere shipSphere = new BoundingSphere(ship.Transform.Position, ship.Model.Meshes[0].BoundingSphere.Radius * GameConstants.ShipBoundingSphereScale);
-            //for (int i = 0; i < asteroidList.Length; i++)
-            //{
-            //    BoundingSphere b = new BoundingSphere(asteroidList[i].Transform.Position, asteroidList[i].Model.Meshes[0].BoundingSphere.Radius * GameConstants.AsteroidBoundingSphereScale);
-
-            //    if (b.Intersects(shipSphere))
-            //    {
-            //        //blow up ship
-            //        soundExplosion3.Play();
-            //        break; //exit the loop
-            //    }
-            //}
-
-            ////bullet-asteroid collision check
-            //for (int i = 0; i < asteroidList.Length; i++)
-            //{
-            //    if (asteroidList[i].isActive)
-            //    {
-            //        BoundingSphere asteroidSphere = new BoundingSphere(asteroidList[i].Transform.Position, asteroidList[i].Model.Meshes[0].BoundingSphere.Radius * GameConstants.AsteroidBoundingSphereScale);
-            //        for (int j = 0; j < bulletList.Length; j++)
-            //        {
-            //            if (bulletList[j].isActive)
-            //            {
-            //                BoundingSphere bulletSphere = new BoundingSphere(bulletList[j].Transform.Position, bulletList[j].Model.Meshes[0].BoundingSphere.Radius);
-            //                if (asteroidSphere.Intersects(bulletSphere))
-            //                {
-            //                    soundExplosion2.Play();
-            //                    asteroidList[i].isActive = false;
-            //                    bulletList[j].isActive = false;
-            //                    break; //no need to check other bullets
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
+            // Shooting bullets
             if (InputManager.IsMouseClicked(0))
             {
                 for (int i = 0; i < GameConstants.NumBullets; i++)
@@ -176,8 +169,16 @@ namespace Assignment4
                 }
             }
 
-            //if (Math.Abs((double)ship.Rigidbody.Velocity.Length()) > 0) engineSound.Play();
+            // Add velocity to the current position.
+            ship.Transform.Position += ship.Rigidbody.Velocity;
+            ship.Rigidbody.Velocity *= 0.95f; // ship slows downs gradually
 
+            for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Update();
+            for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Update();
+
+            //camera.Transform.Position = new Vector3(ship.Transform.Position.X, ship.Transform.Position.Y, GameConstants.CameraHeight);
+
+            // Bullet asteroid collision
             Vector3 normal;
             for (int i = 0; i < asteroidList.Length; i++)
             {
@@ -189,22 +190,53 @@ namespace Assignment4
                         {
                             if (asteroidList[i].Collider.Collides(bulletList[j].Collider, out normal))
                             {
-                                // Particles
                                 Particle particle = particleManager.getNext();
                                 particle.Position = asteroidList[i].Transform.Position;
                                 particle.Velocity = new Vector3(random.Next(-5, 5), 2, random.Next(-50, 50));
                                 particle.Acceleration = new Vector3(0, 3, 0);
-                                particle.MaxAge = random.Next(1, 6);
+                                particle.MaxAge = random.Next(1, 10);
                                 particle.Init();
                                 asteroidList[i].isActive = false;
                                 bulletList[j].isActive = false;
                                 score += GameConstants.KillBonus;
-                                break; //no need to check other bullets
+                                soundInstance = soundExplosion3.CreateInstance();
+                                soundInstance.Play();
+                                break;
                             }
                         }
                     }
                 }
             }
+
+            // Asteroids collide with ship
+            for (int i = 0; i < asteroidList.Length; i++)
+            {
+                if (asteroidList[i].isActive)
+                {
+                    if (asteroidList[i].Collider.Collides(ship.Collider, out normal))
+                    {
+                        Particle particle = particleManager.getNext();
+                        particle.Position = asteroidList[i].Transform.Position;
+                        particle.Velocity = new Vector3(random.Next(-5, 5), 2, 0);
+                        particle.Acceleration = new Vector3(0, 3, 0);
+                        particle.MaxAge = random.Next(5, 10);
+                        particle.Init();
+                        asteroidList[i].isActive = false;
+                        soundInstance = soundExplosion2.CreateInstance();
+                        soundInstance.Play();
+                        playerHealth -= 1;
+                        break;
+                    }
+                }
+            }
+
+            if (playerHealth < 0)
+            {
+                //Exit();
+            }
+
+            //if (Math.Abs((double)ship.Rigidbody.Velocity.Length()) > 0) engineSound.Play();
+
             // particles update
             particleManager.Update();
 
@@ -223,21 +255,19 @@ namespace Assignment4
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            // ship, bullets, and asteroids
-            ship.Draw();
-            for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Draw();
-            for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Draw();
-            //particle draw
-            GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             particleEffect.CurrentTechnique = particleEffect.Techniques["particle"];
             particleEffect.CurrentTechnique.Passes[0].Apply();
             particleEffect.Parameters["ViewProj"].SetValue(camera.View * camera.Projection);
             particleEffect.Parameters["World"].SetValue(Matrix.Identity);
             particleEffect.Parameters["CamIRot"].SetValue(Matrix.Invert(Matrix.CreateFromQuaternion(camera.Transform.Rotation)));
             particleEffect.Parameters["Texture"].SetValue(particleTex);
+
             particleManager.Draw(GraphicsDevice);
-            //...
-            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Draw();
+            for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Draw();
+
+            ship.Draw();
 
             base.Draw(gameTime);
         }

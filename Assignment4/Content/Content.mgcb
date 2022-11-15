@@ -105,6 +105,13 @@
 /processorParam:TextureFormat=Color
 /build:fire.png
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
 #begin hyperspace_activate.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

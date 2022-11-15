@@ -35,22 +35,33 @@ namespace GoingBeyond4
 
         public override void Update()
         {
-            if(InputManager.IsKeyPressed(Keys.W))
+
+            // Input handling for the ship
+            if(InputManager.IsKeyDown(Keys.W))
             {
-                Rigidbody.Velocity += Vector3.Forward * Time.ElapsedGameTime;
+                Rigidbody.Velocity += Transform.Forward * Time.ElapsedGameTime * GameConstants.PlayerSpeed;
             }
-            if (InputManager.IsKeyPressed(Keys.A))
+
+            if (InputManager.IsKeyDown(Keys.S))
             {
-                Transform.Rotate(Transform.Up, Time.ElapsedGameTime);
+                Rigidbody.Velocity += Transform.Backward * Time.ElapsedGameTime * GameConstants.PlayerSpeed;
             }
-            if (InputManager.IsKeyPressed(Keys.S))
+
+            if (InputManager.IsKeyDown(Keys.A))
             {
-                Transform.Rotate(Transform.Down, Time.ElapsedGameTime);
+                Transform.Rotate(Transform.Up, Time.ElapsedGameTime * GameConstants.PlayerRotationSpeed);
             }
-            if (InputManager.IsKeyPressed(Keys.D))
+
+            if (InputManager.IsKeyDown(Keys.D))
             {
-                Rigidbody.Velocity += Vector3.Backward * Time.ElapsedGameTime;
+                Transform.Rotate(Transform.Down, Time.ElapsedGameTime * GameConstants.PlayerRotationSpeed);
             }
+
+            // Handles when the ship goes out of the border
+            if (Transform.Position.X > GameConstants.PlayfieldSizeX) { Transform.LocalPosition -= Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX; }
+            if (Transform.Position.X < -GameConstants.PlayfieldSizeX) { Transform.LocalPosition += Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX; }
+            if (Transform.Position.Y > GameConstants.PlayfieldSizeY) { Transform.LocalPosition -= Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY; }
+            if (Transform.Position.Y < -GameConstants.PlayfieldSizeY) { Transform.LocalPosition += Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY; }
 
             base.Update();
         }
