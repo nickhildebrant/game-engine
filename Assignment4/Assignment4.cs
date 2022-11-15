@@ -16,8 +16,6 @@ namespace Assignment4
 
         Camera camera;
         Light light;
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
 
         //Audio components
         SoundEffect gunSound;
@@ -68,8 +66,6 @@ namespace Assignment4
             asteroid = new Asteroid(Content, camera, GraphicsDevice, light);
             //asteroid.Transform.LocalPosition = new Vector3(500, 0, 500);
             asteroid.Transform.LocalScale = new Vector3(3.0f, 3.0f, 3.0f);
-
-            viewMatrix = Matrix.CreateLookAt(camera.Transform.Position, Vector3.Zero, Vector3.Up);
 
             light = new Light();
             light.Transform = new Transform();
@@ -133,8 +129,8 @@ namespace Assignment4
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.Projection = projectionMatrix;
-                    effect.View = viewMatrix;
+                    //effect.Projection = projectionMatrix;
+                    effect.View = Matrix.CreateLookAt(camera.Transform.Position, Vector3.Zero, Vector3.Up);
                 }
             }
             return absoluteTransforms;
