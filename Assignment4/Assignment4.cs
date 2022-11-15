@@ -1,5 +1,4 @@
 ﻿using CPI311.GameEngine;
-using GoingBeyond4;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,7 +34,7 @@ namespace Assignment4
         Bullet[] bulletList = new Bullet[GameConstants.NumBullets];
 
         //Score & background
-        int score = 0, playerHealth = 5;
+        int score = 0;
         Texture2D stars;
         SpriteFont lucidaConsole;
         Vector2 scorePosition = new Vector2(100, 50);
@@ -77,6 +76,9 @@ namespace Assignment4
 
             bullet = new Bullet(Content, camera, GraphicsDevice, light);
 
+            SoundEffect activation = Content.Load<SoundEffect>("hyperspace_activate");
+            activation.Play();
+
             base.Initialize();
         }
 
@@ -88,7 +90,6 @@ namespace Assignment4
             lucidaConsole = Content.Load<SpriteFont>("font");
 
             ship = new Ship(Content, camera, GraphicsDevice, light);
-            ship.Transform.LocalScale = new Vector3(0.2f, 0.2f, 0.2f);
 
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i] = new Bullet(Content, camera, GraphicsDevice, light);
             ResetAsteroids(); // look at the below private method
@@ -171,7 +172,7 @@ namespace Assignment4
 
             // Add velocity to the current position.
             ship.Transform.Position += ship.Rigidbody.Velocity;
-            ship.Rigidbody.Velocity *= 0.95f; // ship slows downs gradually
+            ship.Rigidbody.Velocity *= 0.97f; // ship slows downs gradually
 
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Update();
             for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Update();
@@ -194,12 +195,14 @@ namespace Assignment4
                                 particle.Position = asteroidList[i].Transform.Position;
                                 particle.Velocity = new Vector3(random.Next(-5, 5), 2, random.Next(-50, 50));
                                 particle.Acceleration = new Vector3(0, 3, 0);
-                                particle.MaxAge = random.Next(1, 10);
+                                particle.MaxAge = random.Next(1, 5);
                                 particle.Init();
                                 asteroidList[i].isActive = false;
                                 bulletList[j].isActive = false;
+
                                 score += GameConstants.KillBonus;
-                                soundInstance = soundExplosion3.CreateInstance();
+
+                                soundInstance = soundExplosion2.CreateInstance();
                                 soundInstance.Play();
                                 break;
                             }
@@ -219,23 +222,18 @@ namespace Assignment4
                         particle.Position = asteroidList[i].Transform.Position;
                         particle.Velocity = new Vector3(random.Next(-5, 5), 2, 0);
                         particle.Acceleration = new Vector3(0, 3, 0);
-                        particle.MaxAge = random.Next(5, 10);
+                        particle.MaxAge = random.Next(1, 8);
                         particle.Init();
+
+                        score -= GameConstants.DeathPenalty;
+                        
                         asteroidList[i].isActive = false;
-                        soundInstance = soundExplosion2.CreateInstance();
+                        soundInstance = soundExplosion3.CreateInstance();
                         soundInstance.Play();
-                        playerHealth -= 1;
                         break;
                     }
                 }
             }
-
-            if (playerHealth < 0)
-            {
-                //Exit();
-            }
-
-            //if (Math.Abs((double)ship.Rigidbody.Velocity.Length()) > 0) engineSound.Play();
 
             // particles update
             particleManager.Update();
@@ -250,6 +248,7 @@ namespace Assignment4
 
             _spriteBatch.Begin();
             _spriteBatch.Draw(stars, new Rectangle(0, 0, 800, 600), Color.White);
+            _spriteBatch.DrawString(lucidaConsole, "Score: " + score, scorePosition, Color.LightGreen);
             _spriteBatch.End();
 
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;

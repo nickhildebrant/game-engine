@@ -32,7 +32,7 @@ namespace Assignment4
 
             // *** Add collider
             SphereCollider sphereCollider = new SphereCollider();
-            sphereCollider.Radius = renderer.ObjectModel.Meshes[0].BoundingSphere.Radius;
+            sphereCollider.Radius = renderer.ObjectModel.Meshes[0].BoundingSphere.Radius * GameConstants.AsteroidBoundingSphereScale;
             sphereCollider.Transform = Transform;
             Add<Collider>(sphereCollider);
             //*** Additional Property (for Asteroid, isActive = true)
