@@ -15,6 +15,8 @@ namespace Assignment4
         SoundEffect soundEngine;
         SoundEffectInstance soundInstance;
 
+        public bool isActive { get; set; }
+
         public Ship(ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
         {
             // *** Add Rigidbody
@@ -65,11 +67,6 @@ namespace Assignment4
                 Transform.Rotate(Vector3.Down, Time.ElapsedGameTime * GameConstants.PlayerRotationSpeed);
             }
 
-            // Handles when the ship goes out of the border
-            if (Transform.Position.X > GameConstants.PlayfieldSizeX) { Transform.LocalPosition -= Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX; }
-            if (Transform.Position.X < -GameConstants.PlayfieldSizeX) { Transform.LocalPosition += Vector3.UnitX * 2 * GameConstants.PlayfieldSizeX; }
-            if (Transform.Position.Y > GameConstants.PlayfieldSizeY) { Transform.LocalPosition -= Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY; }
-            if (Transform.Position.Y < -GameConstants.PlayfieldSizeY) { Transform.LocalPosition += Vector3.UnitY * 2 * GameConstants.PlayfieldSizeY; }
 
             // Handles sound
             if (InputManager.IsKeyDown(Keys.W) || InputManager.IsKeyDown(Keys.A) || InputManager.IsKeyDown(Keys.S) || InputManager.IsKeyDown(Keys.D))

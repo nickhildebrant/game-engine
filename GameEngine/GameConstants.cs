@@ -12,7 +12,7 @@
         public const float PlayfieldSizeY = 12500f;
 
         //asteroid constants
-        public const int NumAsteroids = 15;
+        public const int NumAsteroids = 20;
         public const float AsteroidMinSpeed = 1500.0f;
         public const float AsteroidMaxSpeed = 3000.0f;
         public const float AsteroidSpeedAdjustment = 5.0f;

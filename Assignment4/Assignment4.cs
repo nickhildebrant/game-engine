@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace Assignment4
 {
@@ -11,6 +12,21 @@ namespace Assignment4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        // ****** Scene Items ******************
+        public class Scene
+        {
+            public delegate void CallMethod();
+            public CallMethod Update;
+            public CallMethod Draw;
+            public Scene(CallMethod update, CallMethod draw)
+            { Update = update; Draw = draw; }
+        }
+
+        Dictionary<string, Scene> scenes;
+        Scene currentScene;
+        List<GUIElement> guiElements;
+        // **************************************
 
         Random random = new Random();
 
@@ -22,12 +38,9 @@ namespace Assignment4
         SoundEffectInstance soundInstance;
         SoundEffect soundExplosion2;
         SoundEffect soundExplosion3;
-        SoundEffect engineSound;
 
         //Visual components
         Ship ship;
-        Asteroid asteroid;
-        Bullet bullet;
         Asteroid[] asteroidList = new Asteroid[GameConstants.NumAsteroids];
         Bullet[] bulletList = new Bullet[GameConstants.NumBullets];
 
@@ -55,22 +68,17 @@ namespace Assignment4
             InputManager.Initialize();
             Time.Initialize();
 
+            scenes = new Dictionary<string, Scene>();
+            guiElements = new List<GUIElement>();
+
             camera = new Camera();
             camera.Transform = new Transform();
             camera.Transform.Position = new Vector3(0.0f, 0.0f, GameConstants.CameraHeight);
-            camera.FieldOfView = MathHelper.ToRadians(45.0f);
-            camera.AspectRatio = GraphicsDevice.DisplayMode.AspectRatio;
-            camera.NearPlane = 10000.0f;
+            camera.FieldOfView = MathHelper.ToRadians(55.0f);
             camera.FarPlane = 30000.0f;
-
-            asteroid = new Asteroid(Content, camera, GraphicsDevice, light);
-            //asteroid.Transform.LocalPosition = new Vector3(500, 0, 500);
-            asteroid.Transform.LocalScale = new Vector3(3.0f, 3.0f, 3.0f);
 
             light = new Light();
             light.Transform = new Transform();
-
-            bullet = new Bullet(Content, camera, GraphicsDevice, light);
 
             SoundEffect activation = Content.Load<SoundEffect>("hyperspace_activate");
             activation.Play();
@@ -86,20 +94,24 @@ namespace Assignment4
             lucidaConsole = Content.Load<SpriteFont>("font");
 
             ship = new Ship(Content, camera, GraphicsDevice, light);
+            ship.Transform.LocalScale = new Vector3(1.5f, 1.5f, 1.5f);
 
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i] = new Bullet(Content, camera, GraphicsDevice, light);
-            ResetAsteroids(); // look at the below private method
+            ResetAsteroids();
 
             // Sound effects
             gunSound = Content.Load<SoundEffect>("tx0_fire1");
             soundExplosion2 = Content.Load<SoundEffect>("explosion2");
             soundExplosion3 = Content.Load<SoundEffect>("explosion3");
-            engineSound = Content.Load<SoundEffect>("engine_2");
 
-            // *** Particle
+            // Particle
             particleManager = new ParticleManager(GraphicsDevice, 100);
             particleEffect = Content.Load<Effect>("ParticleShader-complete");
             particleTex = Content.Load<Texture2D>("fire");
+
+            scenes.Add("Gameplay", new Scene(GameplayUpdate, GameplayDraw));
+            scenes.Add("GameOver", new Scene(GameoverUpdate, GameoverDraw));
+            currentScene = scenes["Gameplay"];
         }
 
         private void ResetAsteroids()
@@ -115,25 +127,9 @@ namespace Assignment4
                 asteroidList[i] = new Asteroid(Content, camera, GraphicsDevice, light);
                 asteroidList[i].Transform.Position = new Vector3(xStart, yStart, ship.Transform.Position.Z);
                 double angle = random.NextDouble() * 2 * Math.PI;
-                asteroidList[i].Rigidbody.Velocity = new Vector3((-(float)Math.Cos(angle)) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed), ((float)Math.Cos(angle)) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed), 0);
+                asteroidList[i].Rigidbody.Velocity = new Vector3(-(float)Math.Sin(angle), (float)Math.Cos(angle), 0) * (GameConstants.AsteroidMinSpeed + (float)random.NextDouble() * GameConstants.AsteroidMaxSpeed);
                 asteroidList[i].isActive = true;
             }
-        }
-
-        private Matrix[] SetupEffectDefaults(Model myModel)
-        {
-            Matrix[] absoluteTransforms = new Matrix[myModel.Bones.Count];
-            myModel.CopyAbsoluteBoneTransformsTo(absoluteTransforms);
-            foreach (ModelMesh mesh in myModel.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    //effect.Projection = projectionMatrix;
-                    effect.View = Matrix.CreateLookAt(camera.Transform.Position, Vector3.Zero, Vector3.Up);
-                }
-            }
-            return absoluteTransforms;
         }
 
         protected override void Update(GameTime gameTime)
@@ -166,14 +162,12 @@ namespace Assignment4
                 }
             }
 
-            // Add velocity to the current position.
-            ship.Transform.Position += ship.Rigidbody.Velocity;
-            ship.Rigidbody.Velocity *= 0.97f; // ship slows downs gradually
-
             for (int i = 0; i < GameConstants.NumBullets; i++) bulletList[i].Update();
             for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Update();
 
             //camera.Transform.Position = new Vector3(ship.Transform.Position.X, ship.Transform.Position.Y, GameConstants.CameraHeight);
+            ship.Transform.Position += ship.Rigidbody.Velocity;
+            ship.Rigidbody.Velocity *= 0.97f; // ship slows downs gradually
 
             // Bullet asteroid collision
             Vector3 normal;
@@ -189,9 +183,9 @@ namespace Assignment4
                             {
                                 Particle particle = particleManager.getNext();
                                 particle.Position = asteroidList[i].Transform.Position;
-                                particle.Velocity = new Vector3(random.Next(-5, 5), 2, random.Next(-50, 50));
+                                particle.Velocity = new Vector3(random.Next(-5, 5), random.Next(-5, 5), random.Next(-50, 50));
                                 particle.Acceleration = new Vector3(0, 3, 0);
-                                particle.MaxAge = random.Next(1, 5);
+                                particle.MaxAge = random.Next(1, 8);
                                 particle.Init();
                                 asteroidList[i].isActive = false;
                                 bulletList[j].isActive = false;
@@ -216,13 +210,14 @@ namespace Assignment4
                     {
                         Particle particle = particleManager.getNext();
                         particle.Position = asteroidList[i].Transform.Position;
-                        particle.Velocity = new Vector3(random.Next(-5, 5), 2, 0);
+                        particle.Velocity = new Vector3(random.Next(-5, 5), random.Next(-5, 5), 0);
                         particle.Acceleration = new Vector3(0, 3, 0);
                         particle.MaxAge = random.Next(1, 8);
                         particle.Init();
 
-                        score -= GameConstants.DeathPenalty;
-                        
+                        currentScene = scenes["GameOver"];
+
+                        ship.isActive = false;
                         asteroidList[i].isActive = false;
                         soundInstance = soundExplosion3.CreateInstance();
                         soundInstance.Play();
@@ -238,6 +233,18 @@ namespace Assignment4
         }
 
         protected override void Draw(GameTime gameTime)
+        {
+            currentScene.Draw();
+
+            base.Draw(gameTime);
+        }
+
+        void GameplayUpdate()
+        {
+            foreach (GUIElement element in guiElements) element.Update();
+        }
+
+        void GameplayDraw()
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -263,8 +270,19 @@ namespace Assignment4
             for (int i = 0; i < GameConstants.NumAsteroids; i++) asteroidList[i].Draw();
 
             ship.Draw();
+        }
 
-            base.Draw(gameTime);
+        void GameoverUpdate()
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+        }
+
+        void GameoverDraw()
+        {
+            GraphicsDevice.Clear(Color.White);
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(lucidaConsole, "Game Over, your ship got hit. Press ESC to close the game", scorePosition, Color.DarkRed);
+            _spriteBatch.End();
         }
     }
 }
