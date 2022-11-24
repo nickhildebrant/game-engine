@@ -109,27 +109,46 @@ namespace Assignment5
             //GraphicsDevice.Viewport = cameras[0].Viewport; // draw items using cameras[0] 
             //GraphicsDevice.Viewport = cameras[1].Viewport; // draw items using cameras[1]
 
-            foreach (Camera cam in cameras)
+            //foreach (Camera cam in cameras)
+            //{
+            //    effect.Parameters["View"].SetValue(cam.View);
+            //    effect.Parameters["Projection"].SetValue(cam.Projection);
+            //    effect.Parameters["World"].SetValue(terrain.Transform.World);
+            //    effect.Parameters["CameraPosition"].SetValue(cam.Transform.Position);
+            //    effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
+            //    effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
+
+            //    foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            //    {
+            //        pass.Apply();
+            //        terrain.Draw();
+            //    }
+
+            //    player.Get<Renderer>().Camera = cam;
+            //    agent.Get<Renderer>().Camera = cam;
+
+            //    player.Draw();
+            //    agent.Draw();
+            //}
+
+            effect.Parameters["View"].SetValue(mapCamera.View);
+            effect.Parameters["Projection"].SetValue(mapCamera.Projection);
+            effect.Parameters["World"].SetValue(terrain.Transform.World);
+            effect.Parameters["CameraPosition"].SetValue(mapCamera.Transform.Position);
+            effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
+            effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
+
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
-                effect.Parameters["View"].SetValue(cam.View);
-                effect.Parameters["Projection"].SetValue(cam.Projection);
-                effect.Parameters["World"].SetValue(terrain.Transform.World);
-                effect.Parameters["CameraPosition"].SetValue(cam.Transform.Position);
-                effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
-                effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
-
-                foreach (EffectPass pass in effect.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    terrain.Draw();
-                }
-
-                player.Get<Renderer>().Camera = cam;
-                agent.Get<Renderer>().Camera = cam;
-
-                player.Draw();
-                agent.Draw();
+                pass.Apply();
+                terrain.Draw();
             }
+
+            player.Get<Renderer>().Camera = mapCamera;
+            agent.Get<Renderer>().Camera = mapCamera;
+
+            player.Draw();
+            agent.Draw();
 
             base.Draw(gameTime);
         }
