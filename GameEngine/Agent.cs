@@ -37,9 +37,10 @@ namespace CPI311.GameEngine
 
             path = null;
             random = new Random();
+
+            search = new AStarSearch(gridSize, gridSize); // size of grid 
             float gridW = Terrain.size.X / gridSize;
             float gridH = Terrain.size.Y / gridSize;
-            search = new AStarSearch(gridSize, gridSize); // size of grid 
 
             for (int i = 0; i < gridSize; i++)
             {
