@@ -42,5 +42,15 @@ namespace CPI311.GameEngine
 
             base.Update();
         }
+
+        public int GetGridRow()
+        {
+            return 0;
+        }
+
+        public int GetGridCol()
+        {
+            return 0;
+        }
     }
 }

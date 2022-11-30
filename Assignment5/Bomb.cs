@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -32,8 +31,10 @@ namespace Assignment5
             Add<Rigidbody>(rigidbody);
 
             Texture2D texture = Content.Load<Texture2D>("BlackSquare");
-            Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
-            (renderer.ObjectModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = Color.Black.ToVector3();
+            Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 2);
+            renderer.ObjectModel.Meshes[0].Effects[0].Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
+            renderer.ObjectModel.Meshes[0].Effects[0].Parameters["SpecularColor"].SetValue(Color.Red.ToVector3());
+            (renderer.ObjectModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = Color.Red.ToVector3();
             Add<Renderer>(renderer);
 
             SphereCollider sphereCollider = new SphereCollider();
@@ -97,7 +98,7 @@ namespace Assignment5
             while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
 
             int row = (search.Rows / 2) + ((int)player.Transform.LocalPosition.X / search.Rows);
-            int col = (search.Cols / 2) + ((int)player.Transform.LocalPosition.Y / search.Cols);
+            int col = (search.Cols / 2) + ((int)player.Transform.LocalPosition.Z / search.Cols);
             search.End = search.Nodes[row, col];
             search.Search();
             path = new List<Vector3>();
