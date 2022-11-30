@@ -32,11 +32,10 @@ namespace CPI311.GameEngine
 
         public override void Update()
         {
-            // Control the player
-            if (InputManager.IsKeyDown(Keys.W)) Transform.LocalPosition += Transform.Forward * Time.ElapsedGameTime * 5f; // move forward
-            if (InputManager.IsKeyDown(Keys.S)) Transform.LocalPosition += Transform.Backward * Time.ElapsedGameTime * 5f; // move backward
-            if (InputManager.IsKeyDown(Keys.A)) Transform.LocalPosition += Transform.Left * Time.ElapsedGameTime * 5f; // move right
-            if (InputManager.IsKeyDown(Keys.D)) Transform.LocalPosition += Transform.Right * Time.ElapsedGameTime * 5f; // move left
+            if (InputManager.IsKeyDown(Keys.W) && Terrain.GetAltitude(Transform.LocalPosition + Transform.Forward * 7.5f * Time.ElapsedGameTime) < 0.25) Transform.LocalPosition += Transform.Forward * Time.ElapsedGameTime * 7.5f; // move forward
+            if (InputManager.IsKeyDown(Keys.S) && Terrain.GetAltitude(Transform.LocalPosition + Transform.Backward * 7.5f * Time.ElapsedGameTime) < 0.25) Transform.LocalPosition += Transform.Backward * Time.ElapsedGameTime * 7.5f; // move backward
+            if (InputManager.IsKeyDown(Keys.A) && Terrain.GetAltitude(Transform.LocalPosition + Transform.Left * 7.5f * Time.ElapsedGameTime) < 0.25) Transform.LocalPosition += Transform.Left * Time.ElapsedGameTime * 7.5f; // move right
+            if (InputManager.IsKeyDown(Keys.D) && Terrain.GetAltitude(Transform.LocalPosition + Transform.Right * 7.5f * Time.ElapsedGameTime) < 0.25) Transform.LocalPosition += Transform.Right * Time.ElapsedGameTime * 7.5f; // move left
 
             // change the Y position corresponding to the terrain (maze)
             Transform.LocalPosition = new Vector3(Transform.LocalPosition.X, Terrain.GetAltitude(Transform.LocalPosition), Transform.LocalPosition.Z) + Vector3.Up;
