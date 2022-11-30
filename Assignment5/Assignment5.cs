@@ -142,12 +142,13 @@ namespace Assignment5
             {
                 pass.Apply();
                 terrain.Draw();
+
+                player.Draw();
             }
 
             player.Get<Renderer>().Camera = mapCamera;
             agent.Get<Renderer>().Camera = mapCamera;
 
-            player.Draw();
             agent.Draw();
 
             base.Draw(gameTime);
