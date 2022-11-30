@@ -20,6 +20,7 @@ namespace Assignment5
         Light light;
 
         Player player;
+        Bomb bomb;
 
         List<Agent> agents;
 
@@ -82,11 +83,13 @@ namespace Assignment5
 
             light = new Light();
             light.Transform = new Transform();
-            light.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
+            light.Transform.LocalPosition = Vector3.Backward * 200 + Vector3.Right * 5 + Vector3.Up * 5;
 
             player = new Player(terrain, Content, mapCamera, GraphicsDevice, light);
 
-            for(int i = 0; i < 3; i++) agents.Add(new Agent(terrain, Content, mapCamera, GraphicsDevice, light));
+            bomb = new Bomb(terrain, Content, mapCamera, GraphicsDevice, light, player);
+
+            for (int i = 0; i < 3; i++) agents.Add(new Agent(terrain, Content, mapCamera, GraphicsDevice, light));
 
         }
 
@@ -100,7 +103,12 @@ namespace Assignment5
             if (InputManager.IsKeyDown(Keys.Up)) mapCamera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
             if (InputManager.IsKeyDown(Keys.Down)) mapCamera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
 
+            if (InputManager.IsKeyDown(Keys.U)) light.Transform.LocalPosition += light.Transform.Forward * 5f * Time.ElapsedGameTime;
+            if (InputManager.IsKeyDown(Keys.I)) light.Transform.LocalPosition += light.Transform.Backward * 5f * Time.ElapsedGameTime;
+
             player.Update();
+
+            bomb.Update();
 
             foreach (Agent agent in agents)
             {
@@ -154,6 +162,7 @@ namespace Assignment5
                 terrain.Draw();
 
                 player.Draw();
+                bomb.Draw();
                 foreach (Agent agent in agents) agent.Draw();
             }
 
