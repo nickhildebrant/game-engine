@@ -20,7 +20,8 @@ namespace Assignment5
         Light light;
 
         Player player;
-        Agent agent;
+
+        List<Agent> agents;
 
         List<Transform> transforms;
         List<Camera> cameras;
@@ -48,6 +49,8 @@ namespace Assignment5
 
             cameras = new List<Camera>();
             transforms = new List<Transform>();
+
+            agents = new List<Agent>();
 
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH2"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN2");
@@ -81,8 +84,10 @@ namespace Assignment5
             light.Transform = new Transform();
             light.Transform.LocalPosition = Vector3.Backward * 5 + Vector3.Right * 5 + Vector3.Up * 5;
 
-            player = new Player(terrain, Content, camera, GraphicsDevice, light);
-            agent = new Agent(terrain, Content, camera, GraphicsDevice, light);
+            player = new Player(terrain, Content, mapCamera, GraphicsDevice, light);
+
+            for(int i = 0; i < 3; i++) agents.Add(new Agent(terrain, Content, mapCamera, GraphicsDevice, light));
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -92,11 +97,16 @@ namespace Assignment5
             Time.Update(gameTime);
             InputManager.Update();
 
-            if (InputManager.IsKeyDown(Keys.Up)) camera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
-            if (InputManager.IsKeyDown(Keys.Down)) camera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Up)) mapCamera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Down)) mapCamera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
 
             player.Update();
-            agent.Update();
+
+            foreach (Agent agent in agents)
+            {
+                agent.Update();
+                agent.CheckCollision(player);
+            }
 
             base.Update(gameTime);
         }
@@ -144,12 +154,8 @@ namespace Assignment5
                 terrain.Draw();
 
                 player.Draw();
+                foreach (Agent agent in agents) agent.Draw();
             }
-
-            player.Get<Renderer>().Camera = mapCamera;
-            agent.Get<Renderer>().Camera = mapCamera;
-
-            agent.Draw();
 
             base.Draw(gameTime);
         }

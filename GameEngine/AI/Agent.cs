@@ -64,6 +64,7 @@ namespace CPI311.GameEngine
                 Vector3 direction = Vector3.Distance(destinationPoint, currentPosition) == 0 ? Vector3.Zero : Vector3.Normalize(destinationPoint - currentPosition);
 
                 this.Rigidbody.Velocity = new Vector3(direction.X, 0, direction.Z) * speed;
+
                 if (Vector3.Distance(currentPosition, destinationPoint) < 1f) // if it reaches to a point, go to the next in path
                 {
                     path.RemoveAt(0);
