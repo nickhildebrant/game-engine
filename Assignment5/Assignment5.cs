@@ -131,7 +131,7 @@ namespace Assignment5
                 if(agent.CheckCollision(player)) agentCollisions++;
             }
 
-            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) <= 1f) currentScene = scenes["GameOver"];
+            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) <= 2.25f) currentScene = scenes["GameOver"];
 
             base.Update(gameTime);
         }
