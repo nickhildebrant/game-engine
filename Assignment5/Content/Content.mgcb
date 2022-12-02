@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:BlackSquare.png
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
 #begin mazeH.png
 /importer:TextureImporter
 /processor:TextureProcessor

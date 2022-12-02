@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -18,6 +20,8 @@ namespace Assignment5
         private Player player;
 
         private Random random { get; set; }
+
+        private bool haveThreadRunning;
 
         public Bomb(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light, Player player) : base()
         {
@@ -57,6 +61,9 @@ namespace Assignment5
                     if (Terrain.GetAltitude(pos) > 1.0) search.Nodes[j, i].Passable = false;
                 }
             }
+
+            haveThreadRunning = true;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(NewPosition));
         }
 
         public override void Update()
@@ -84,7 +91,8 @@ namespace Assignment5
             }
             else
             {
-                PlayerPathFinding();
+                // Search again to make a new path.
+                RandomPathFinding();
                 Transform.LocalPosition = GetGridPosition(path[0]);
             }
 
@@ -93,13 +101,27 @@ namespace Assignment5
             base.Update();
         }
 
-        private void PlayerPathFinding()
+        private Vector3 GetGridPosition(Vector3 gridPos)
         {
-            while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
+            float gridW = Terrain.size.X / search.Cols;
+            float gridH = Terrain.size.Y / search.Rows;
+            return new Vector3(gridW * gridPos.X + gridW / 2 - Terrain.size.X / 2, 0, gridH * gridPos.Z + gridH / 2 - Terrain.size.Y / 2);
+        }
 
-            int row = (search.Rows / 2) + ((int)player.Transform.LocalPosition.X / search.Rows);
-            int col = (search.Cols / 2) + ((int)player.Transform.LocalPosition.Z / search.Cols);
-            search.End = search.Nodes[row, col];
+        // GW * GP.X + GW / 2 - T.S.X / 2
+        // GH * 
+
+        private void RandomPathFinding()
+        {
+            while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
+
+            search.Start = search.Nodes[1, 1];
+
+            int row = (int)GetGridPosition(player.Transform.Position).X;
+            int col = (int)GetGridPosition(player.Transform.Position).Z;
+            Debug.WriteLine("[" + row + "," + col +"]");
+
+            search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
             search.Search();
             path = new List<Vector3>();
 
@@ -111,11 +133,22 @@ namespace Assignment5
             }
         }
 
-        private Vector3 GetGridPosition(Vector3 gridPos)
+        private void NewPosition(Object obj)
         {
-            float gridW = Terrain.size.X / search.Cols;
-            float gridH = Terrain.size.Y / search.Rows;
-            return new Vector3(gridW * gridPos.X + gridW / 2 - Terrain.size.X / 2, 0, gridH * gridPos.Z + gridH / 2 - Terrain.size.Y / 2);
+            while (haveThreadRunning)
+            {
+                System.Threading.Thread.Sleep(5000);
+
+                if (path != null && path.Count > 0)
+                {
+                    path.RemoveAt(0);
+                    if (path.Count == 0) // if it reached to the goal
+                    {
+                        path = null;
+                        return;
+                    }
+                }
+            }
         }
     }
 }

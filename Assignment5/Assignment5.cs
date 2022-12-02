@@ -16,16 +16,31 @@ namespace Assignment5
         TerrainRenderer terrain;
         Effect effect;
 
-        Camera camera, mapCamera;
+        Camera camera;
         Light light;
 
         Player player;
         Bomb bomb;
-
         List<Agent> agents;
 
-        List<Transform> transforms;
-        List<Camera> cameras;
+        SpriteFont font;
+
+        int agentCollisions = 0;
+
+        // ****** Scene Items ******************
+        public class Scene
+        {
+            public delegate void CallMethod();
+            public CallMethod Update;
+            public CallMethod Draw;
+            public Scene(CallMethod update, CallMethod draw)
+            { Update = update; Draw = draw; }
+        }
+
+        Dictionary<string, Scene> scenes;
+        Scene currentScene;
+        List<GUIElement> guiElements;
+        // **************************************
 
         public Assignment5()
         {
@@ -41,6 +56,8 @@ namespace Assignment5
             InputManager.Initialize();
             ScreenManager.Initialize(_graphics);
 
+            scenes = new Dictionary<string, Scene>();
+
             base.Initialize();
         }
 
@@ -48,8 +65,7 @@ namespace Assignment5
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            cameras = new List<Camera>();
-            transforms = new List<Transform>();
+            font = Content.Load<SpriteFont>("font");
 
             agents = new List<Agent>();
 
@@ -67,29 +83,24 @@ namespace Assignment5
 
             camera = new Camera();
             camera.Transform = new Transform();
-            camera.Transform.LocalPosition = Vector3.Up * 50;
-            camera.Transform.Rotate(Vector3.Left, MathHelper.PiOver2);
-            camera.Position = new Vector2(-0.1f, 0f);
-            camera.AspectRatio = camera.Viewport.AspectRatio;
-            cameras.Add(camera);
-
-            mapCamera = new Camera();
-            mapCamera.Transform = new Transform();
-            mapCamera.Transform.LocalPosition = Vector3.Up * 60;
-            mapCamera.Transform.Rotate(Vector3.Left, MathHelper.PiOver2);// - 0.2f);
-            mapCamera.Position = new Vector2(0.75f, 0f);
-            mapCamera.Size = new Vector2(0.2f, 0.2f);
-            cameras.Add(mapCamera);
+            camera.Transform.LocalPosition = Vector3.Up * 60;
+            camera.Transform.Rotate(Vector3.Left, MathHelper.PiOver2);// - 0.2f);
+            camera.Position = new Vector2(0.75f, 0f);
+            camera.Size = new Vector2(0.2f, 0.2f);
 
             light = new Light();
             light.Transform = new Transform();
             light.Transform.LocalPosition = Vector3.Backward * 200 + Vector3.Right * 5 + Vector3.Up * 5;
 
-            player = new Player(terrain, Content, mapCamera, GraphicsDevice, light);
+            player = new Player(terrain, Content, camera, GraphicsDevice, light);
 
-            bomb = new Bomb(terrain, Content, mapCamera, GraphicsDevice, light, player);
+            bomb = new Bomb(terrain, Content, camera, GraphicsDevice, light, player);
 
-            for (int i = 0; i < 3; i++) agents.Add(new Agent(terrain, Content, mapCamera, GraphicsDevice, light));
+            for (int i = 0; i < 3; i++) agents.Add(new Agent(terrain, Content, camera, GraphicsDevice, light));
+
+            scenes.Add("Gameplay", new Scene(GameplayUpdate, GameplayDraw));
+            scenes.Add("GameOver", new Scene(GameoverUpdate, GameoverDraw));
+            currentScene = scenes["Gameplay"];
 
         }
 
@@ -100,8 +111,8 @@ namespace Assignment5
             Time.Update(gameTime);
             InputManager.Update();
 
-            if (InputManager.IsKeyDown(Keys.Up)) mapCamera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
-            if (InputManager.IsKeyDown(Keys.Down)) mapCamera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Up)) camera.Transform.Rotate(Vector3.Right, Time.ElapsedGameTime);
+            if (InputManager.IsKeyDown(Keys.Down)) camera.Transform.Rotate(Vector3.Left, Time.ElapsedGameTime);
 
             if (InputManager.IsKeyDown(Keys.U)) light.Transform.LocalPosition += light.Transform.Forward * 5f * Time.ElapsedGameTime;
             if (InputManager.IsKeyDown(Keys.I)) light.Transform.LocalPosition += light.Transform.Backward * 5f * Time.ElapsedGameTime;
@@ -113,60 +124,66 @@ namespace Assignment5
             foreach (Agent agent in agents)
             {
                 agent.Update();
-                agent.CheckCollision(player);
+                if(agent.CheckCollision(player)) agentCollisions++;
             }
+
+            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) < 1f) currentScene = scenes["GameOver"];
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            currentScene.Draw();
+
+            base.Draw(gameTime);
+        }
+
+        void GameplayUpdate()
+        {
+            foreach (GUIElement element in guiElements) element.Update();
+        }
+
+        void GameplayDraw()
+        {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
-            //GraphicsDevice.Viewport = cameras[0].Viewport; // draw items using cameras[0] 
-            //GraphicsDevice.Viewport = cameras[1].Viewport; // draw items using cameras[1]
-
-            //foreach (Camera cam in cameras)
-            //{
-            //    effect.Parameters["View"].SetValue(cam.View);
-            //    effect.Parameters["Projection"].SetValue(cam.Projection);
-            //    effect.Parameters["World"].SetValue(terrain.Transform.World);
-            //    effect.Parameters["CameraPosition"].SetValue(cam.Transform.Position);
-            //    effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
-            //    effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
-
-            //    foreach (EffectPass pass in effect.CurrentTechnique.Passes)
-            //    {
-            //        pass.Apply();
-            //        terrain.Draw();
-            //    }
-
-            //    player.Get<Renderer>().Camera = cam;
-            //    agent.Get<Renderer>().Camera = cam;
-
-            //    player.Draw();
-            //    agent.Draw();
-            //}
-
-            effect.Parameters["View"].SetValue(mapCamera.View);
-            effect.Parameters["Projection"].SetValue(mapCamera.Projection);
+            effect.Parameters["View"].SetValue(camera.View);
+            effect.Parameters["Projection"].SetValue(camera.Projection);
             effect.Parameters["World"].SetValue(terrain.Transform.World);
-            effect.Parameters["CameraPosition"].SetValue(mapCamera.Transform.Position);
+            effect.Parameters["CameraPosition"].SetValue(camera.Transform.Position);
             effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
             effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
-                pass.Apply();
-                terrain.Draw();
-
                 player.Draw();
                 bomb.Draw();
+
                 foreach (Agent agent in agents) agent.Draw();
+
+                pass.Apply();
+                terrain.Draw();
             }
 
-            base.Draw(gameTime);
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(font, "Aliens Caught: " + agentCollisions, new Vector2(5, 10), Color.Black);
+            _spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.Black);
+            _spriteBatch.End();
+        }
+
+        void GameoverUpdate()
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+        }
+
+        void GameoverDraw()
+        {
+            GraphicsDevice.Clear(Color.White);
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(font, "Game Over, you got hit by a bomb. Press ESC to close the game", new Vector2(120, ScreenManager.Height/2), Color.Black);
+            _spriteBatch.End();
         }
     }
 }
