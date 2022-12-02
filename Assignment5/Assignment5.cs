@@ -127,7 +127,7 @@ namespace Assignment5
                 if(agent.CheckCollision(player)) agentCollisions++;
             }
 
-            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) < 0.75f) currentScene = scenes["GameOver"];
+            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) <= 1f) currentScene = scenes["GameOver"];
 
             base.Update(gameTime);
         }
@@ -158,13 +158,13 @@ namespace Assignment5
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
+                pass.Apply();
+                terrain.Draw();
+
                 player.Draw();
                 bomb.Draw();
 
                 foreach (Agent agent in agents) agent.Draw();
-
-                pass.Apply();
-                terrain.Draw();
             }
 
             _spriteBatch.Begin();

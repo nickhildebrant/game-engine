@@ -28,6 +28,7 @@ namespace CPI311.GameEngine
 
             Texture2D texture = Content.Load<Texture2D>("Square");
             Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
+            renderer.Material.Ambient = Color.DarkGreen.ToVector3();
             Add<Renderer>(renderer);
 
             SphereCollider sphereCollider = new SphereCollider();

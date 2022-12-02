@@ -14,7 +14,7 @@ namespace Assignment5
         public AStarSearch search;
         List<Vector3> path;
 
-        private float speed = 7.5f; //moving speed
+        private float speed = 10f; //moving speed
         private int gridSize = 20; //grid size
         private TerrainRenderer Terrain;
         private Player player;
@@ -35,10 +35,8 @@ namespace Assignment5
             Add<Rigidbody>(rigidbody);
 
             Texture2D texture = Content.Load<Texture2D>("BlackSquare");
-            Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 2);
-            renderer.ObjectModel.Meshes[0].Effects[0].Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
-            renderer.ObjectModel.Meshes[0].Effects[0].Parameters["SpecularColor"].SetValue(Color.Red.ToVector3());
-            (renderer.ObjectModel.Meshes[0].Effects[0] as BasicEffect).DiffuseColor = Color.Red.ToVector3();
+            Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
+            renderer.Material.Ambient = Color.Black.ToVector3();
             Add<Renderer>(renderer);
 
             SphereCollider sphereCollider = new SphereCollider();
@@ -132,11 +130,11 @@ namespace Assignment5
 
         private void NewPosition(Object obj)
         {
-            while (haveThreadRunning)
-            {
-                System.Threading.Thread.Sleep(5000);
-                PlayerPathFinding();
-            }
+            //while (haveThreadRunning)
+            //{
+            //    System.Threading.Thread.Sleep(5000);
+            //    PlayerPathFinding();
+            //}
         }
     }
 }
