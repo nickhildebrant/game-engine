@@ -12,6 +12,8 @@ namespace Assignment5
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        Texture2D stars;
+
         // *** Assignment5
         TerrainRenderer terrain;
         Effect effect;
@@ -64,6 +66,8 @@ namespace Assignment5
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            stars = Content.Load<Texture2D>("b1_stars");
 
             font = Content.Load<SpriteFont>("font");
 
@@ -149,6 +153,10 @@ namespace Assignment5
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(stars, new Rectangle(0, 0, 800, 600), Color.White);
+            _spriteBatch.End();
+
             effect.Parameters["View"].SetValue(camera.View);
             effect.Parameters["Projection"].SetValue(camera.Projection);
             effect.Parameters["World"].SetValue(terrain.Transform.World);
@@ -168,8 +176,8 @@ namespace Assignment5
             }
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(font, "Aliens Caught: " + agentCollisions, new Vector2(5, 10), Color.White);
-            _spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.White);
+            _spriteBatch.DrawString(font, "Aliens Caught: " + agentCollisions, new Vector2(5, 10), Color.LightGreen);
+            _spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.LightGreen);
             _spriteBatch.End();
         }
 
@@ -182,7 +190,8 @@ namespace Assignment5
         {
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(font, "Game Over, you got hit by a bomb. Press ESC to close the game", new Vector2(120, ScreenManager.Height/2), Color.Black);
+            _spriteBatch.Draw(stars, new Rectangle(0, 0, 800, 600), Color.White);
+            _spriteBatch.DrawString(font, "Game Over, you got hit by a bomb. Press ESC to close the game", new Vector2(120, ScreenManager.Height/2), Color.Green);
             _spriteBatch.End();
         }
     }
