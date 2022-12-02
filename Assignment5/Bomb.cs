@@ -14,7 +14,7 @@ namespace Assignment5
         public AStarSearch search;
         List<Vector3> path;
 
-        private float speed = 5f; //moving speed
+        private float speed = 7.5f; //moving speed
         private int gridSize = 20; //grid size
         private TerrainRenderer Terrain;
         private Player player;
@@ -84,7 +84,7 @@ namespace Assignment5
                     path.RemoveAt(0);
                     if (path.Count == 0) // if it reached to the goal
                     {
-                        path = null;
+                        PlayerPathFinding();
                         return;
                     }
                 }
@@ -92,7 +92,7 @@ namespace Assignment5
             else
             {
                 // Search again to make a new path.
-                RandomPathFinding();
+                PlayerPathFinding();
                 Transform.LocalPosition = GetGridPosition(path[0]);
             }
 
@@ -108,20 +108,17 @@ namespace Assignment5
             return new Vector3(gridW * gridPos.X + gridW / 2 - Terrain.size.X / 2, 0, gridH * gridPos.Z + gridH / 2 - Terrain.size.Y / 2);
         }
 
-        // GW * GP.X + GW / 2 - T.S.X / 2
-        // GH * 
-
-        private void RandomPathFinding()
+        private void PlayerPathFinding()
         {
-            while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
+            if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
+            else search.Start = search.End;
 
-            search.Start = search.Nodes[1, 1];
+            int row = (((int)player.Transform.Position.X + 44) / 5) % search.Rows + 1;
+            int col = (((int)player.Transform.Position.Z + 44) / 5) % search.Cols + 1;
+            Debug.WriteLine("[" + row + "," + col + "]");
 
-            int row = (int)GetGridPosition(player.Transform.Position).X;
-            int col = (int)GetGridPosition(player.Transform.Position).Z;
-            Debug.WriteLine("[" + row + "," + col +"]");
-
-            search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
+            //search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
+            search.End = search.Nodes[col, row];
             search.Search();
             path = new List<Vector3>();
 
@@ -138,16 +135,7 @@ namespace Assignment5
             while (haveThreadRunning)
             {
                 System.Threading.Thread.Sleep(5000);
-
-                if (path != null && path.Count > 0)
-                {
-                    path.RemoveAt(0);
-                    if (path.Count == 0) // if it reached to the goal
-                    {
-                        path = null;
-                        return;
-                    }
-                }
+                PlayerPathFinding();
             }
         }
     }

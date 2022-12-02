@@ -127,7 +127,7 @@ namespace Assignment5
                 if(agent.CheckCollision(player)) agentCollisions++;
             }
 
-            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) < 1f) currentScene = scenes["GameOver"];
+            if(Vector3.Distance(player.Transform.Position, bomb.Transform.Position) < 0.75f) currentScene = scenes["GameOver"];
 
             base.Update(gameTime);
         }
@@ -168,8 +168,8 @@ namespace Assignment5
             }
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(font, "Aliens Caught: " + agentCollisions, new Vector2(5, 10), Color.Black);
-            _spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.Black);
+            _spriteBatch.DrawString(font, "Aliens Caught: " + agentCollisions, new Vector2(5, 10), Color.White);
+            _spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.White);
             _spriteBatch.End();
         }
 
