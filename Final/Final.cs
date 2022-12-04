@@ -74,7 +74,7 @@ namespace Final
             effect = Content.Load<Effect>("TerrainShader");
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));
-            effect.Parameters["SpecularColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));
+            effect.Parameters["SpecularColor"].SetValue(new Vector3(0.2f, 0.2f, 0.1f));
             effect.Parameters["Shininess"].SetValue(5f);
 
             camera = new Camera();
