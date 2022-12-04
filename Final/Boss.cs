@@ -28,7 +28,7 @@ public class Boss : GameObject
 
         Texture2D texture = Content.Load<Texture2D>("Square");
         Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
-        renderer.Material.Ambient = Color.DarkGreen.ToVector3();
+        //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();
@@ -71,7 +71,7 @@ public class Boss : GameObject
                 path.RemoveAt(0);
                 if (path.Count == 0) // if it reached to the goal
                 {
-                    path = null;
+                    RandomPathFinding();
                     return;
                 }
             }
@@ -97,31 +97,18 @@ public class Boss : GameObject
 
     private void RandomPathFinding()
     {
-        while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
+        if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
+        else search.Start = search.End;
 
-        search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
+        while (!(search.End = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
         search.Search();
         path = new List<Vector3>();
 
         AStarNode current = search.End;
-        var count = 0;
         while (current != null)
         {
             path.Insert(0, current.Position);
             current = current.Parent;
-
         }
-    }
-
-    //Player Collision
-    public virtual bool CheckCollision(Player player)
-    {
-        Vector3 normal;
-        if (player.Get<Collider>().Collides(this.Get<Collider>(), out normal))
-        {
-            path = null;
-            return true;
-        }
-        return false;
     }
 }

@@ -104,7 +104,6 @@ namespace CPI311.GameEngine
             path = new List<Vector3>();
 
             AStarNode current = search.End;
-            var count = 0;
             while (current != null)
             {
                 path.Insert(0, current.Position);
