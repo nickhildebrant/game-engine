@@ -76,11 +76,7 @@ public class Boss : GameObject
             ThreadPool.QueueUserWorkItem(new WaitCallback(PathfindingReset));
             Debug.WriteLine("Player spotted!!!");
             alertSound.Play();
-        }
-
-        if(haveThreadRunning)
-        {
-
+            speed = 20f;
         }
 
         if(Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) < 0)
@@ -149,33 +145,12 @@ public class Boss : GameObject
         }
     }
 
-    private void PlayerPathFinding()
-    {
-        if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
-        else search.Start = search.End;
-
-        int row = (((int)player.Transform.Position.X + 44) / 5) % search.Rows + 1;
-        int col = (((int)player.Transform.Position.Z + 44) / 5) % search.Cols + 1;
-        Debug.WriteLine("[" + row + "," + col + "]");
-
-        //search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
-        search.End = search.Nodes[col, row];
-        search.Search();
-        path = new List<Vector3>();
-
-        AStarNode current = search.End;
-        while (current != null)
-        {
-            path.Insert(0, current.Position);
-            current = current.Parent;
-        }
-    }
-
     private void PathfindingReset(Object obj)
     {
         while (haveThreadRunning)
         {
             System.Threading.Thread.Sleep(6000);
+            speed = 5f;
             haveThreadRunning = false;
         }
     }

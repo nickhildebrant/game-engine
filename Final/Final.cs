@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Final
 {
@@ -29,6 +30,7 @@ namespace Final
 
         Player player;
         Boss boss;
+        ExitSign exitSign;
 
         List<Prize> assigments;
 
@@ -90,7 +92,7 @@ namespace Final
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN");
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 12, 1);//12, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 2, 1);//12, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));
@@ -117,6 +119,8 @@ namespace Final
             {
                 assigments.Add(new Prize(terrain, Content, camera, GraphicsDevice, light));
             }
+
+            exitSign = new ExitSign(terrain, Content, camera, GraphicsDevice, light);
         }
 
         protected override void Update(GameTime gameTime)
@@ -165,14 +169,14 @@ namespace Final
             // Camera movement
             if (InputManager.IsKeyDown(Keys.Left))
             {
-                player.Transform.Rotate(Vector3.UnitY, 2f * Time.ElapsedGameTime); 
-                light.Transform.Rotate(Vector3.UnitY, 2f * Time.ElapsedGameTime); 
+                player.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime); 
+                light.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime); 
             }
 
             if (InputManager.IsKeyDown(Keys.Right)) 
             { 
-                player.Transform.Rotate(Vector3.UnitY, -2f * Time.ElapsedGameTime);
-                light.Transform.Rotate(Vector3.UnitY, -2f * Time.ElapsedGameTime);
+                player.Transform.Rotate(Vector3.UnitY, -3f * Time.ElapsedGameTime);
+                light.Transform.Rotate(Vector3.UnitY, -3f * Time.ElapsedGameTime);
             }
             
             if (InputManager.IsKeyDown(Keys.Up)) 
@@ -210,6 +214,24 @@ namespace Final
                 }
             }
 
+            if (isExiting)
+            {
+                exitSign.Update();
+
+                if (Vector3.Distance(exitSign.Transform.LocalPosition, camera.Transform.LocalPosition) <= 6f)
+                {
+                    //Debug.WriteLine("Pickup Item");
+
+                    canPickup = true;
+
+                    if (InputManager.IsKeyPressed(Keys.F))
+                    {
+                        Debug.WriteLine("You win!!");
+                        currentScene = null;
+                    }
+                }
+            }
+
             // 3 Papers Collected
             if(collectedPapers == 3)
             {
@@ -220,6 +242,13 @@ namespace Final
             // Times Up - GameOver
             if(90 - Time.TotalGameTime.Seconds <= 0)
             {
+                currentScene = null;
+            }
+
+            // Collision with boss - GameOver
+            if(Vector3.Distance(boss.Transform.LocalPosition, player.Transform.LocalPosition) <= 2.5f)
+            {
+                Debug.WriteLine("Gameover, the boss caught you");
                 currentScene = null;
             }
 
@@ -248,6 +277,8 @@ namespace Final
                 terrain.Draw();
 
                 boss.Draw();
+
+                if (isExiting) exitSign.Draw();
 
                 foreach (Prize paper in assigments) { paper.Draw(); }
             }
