@@ -27,7 +27,7 @@ public class Prize : GameObject
         Add<Rigidbody>(rigidbody);
 
         Texture2D texture = Content.Load<Texture2D>("Square");
-        Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
+        Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
         //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
         Add<Renderer>(renderer);
 
@@ -55,8 +55,7 @@ public class Prize : GameObject
 
     public override void Update()
     {
-        Transform.Rotate(Transform.Up, Time.ElapsedGameTime);
-        Transform.LocalPosition *= 2;//(float)Math.Sin(10 * Time.ElapsedGameTime);
+        Transform.Rotate(Transform.Up, 5 * Time.ElapsedGameTime);
 
         if (path == null)
         {
@@ -65,7 +64,7 @@ public class Prize : GameObject
             Transform.LocalPosition = GetGridPosition(path[0]);
         }
 
-        this.Transform.LocalPosition = new Vector3(this.Transform.LocalPosition.X, Terrain.GetAltitude(this.Transform.LocalPosition), this.Transform.LocalPosition.Z) + Vector3.Up;
+        this.Transform.LocalPosition = new Vector3(this.Transform.LocalPosition.X, (float)(1 + Math.Sin(Time.TotalGameTime.Milliseconds / 200.0f)), this.Transform.LocalPosition.Z) + Vector3.Up;
         Transform.Update();
         base.Update();
     }

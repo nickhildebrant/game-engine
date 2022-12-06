@@ -19,7 +19,7 @@ public class Boss : GameObject
 
     private Random random { get; set; }
 
-    public Boss(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
+    public Boss(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light, Player player) : base()
     {
         Terrain = terrain;
 
@@ -29,8 +29,9 @@ public class Boss : GameObject
         Add<Rigidbody>(rigidbody);
 
         Texture2D texture = Content.Load<Texture2D>("criminalMaleA");
-        Renderer renderer = new Renderer(Content.Load<Model>("characterMedium"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
+        Renderer renderer = new Renderer(Content.Load<Model>("characterMedium"), Transform, camera, light, Content, graphicsDevice, 0f, texture, "SimpleShading", 1);
         //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
+        Transform.Rotate(Vector3.UnitX, -MathHelper.PiOver2);
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();
@@ -57,14 +58,13 @@ public class Boss : GameObject
 
     public override void Update()
     {
-        Debug.WriteLine(Transform.Forward.ToString() + " : " + Vector3.Normalize(Rigidbody.Velocity).ToString());
-        if(Math.Round(Vector3.Dot(Transform.Forward, Vector3.Normalize(Rigidbody.Velocity))) < 0)
+        if(Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) < 0)
         {
-            Transform.Rotate(Transform.Up, Time.ElapsedGameTime * 100);
+            Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
         }
-        else if (Math.Round(Vector3.Dot(Transform.Forward, Vector3.Normalize(Rigidbody.Velocity))) > 0)
+        else if (Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) > 0)
         {
-            Transform.Rotate(Transform.Down, Time.ElapsedGameTime * 100);
+            Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
         }
 
         if (path != null && path.Count > 0)

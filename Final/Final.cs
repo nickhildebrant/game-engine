@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace Final
 {
@@ -26,6 +26,8 @@ namespace Final
         Boss boss;
 
         List<Prize> assigments;
+
+        int collectedPapers = 0;
 
         // ****** Scene Items ******************
         public class Scene
@@ -94,8 +96,7 @@ namespace Final
             player = new Player(terrain, Content, camera, GraphicsDevice, light);
             camera.Transform.Parent = player.Transform;
 
-            boss = new Boss(terrain, Content, camera, GraphicsDevice, light);
-            //boss.Transform.LocalScale = new Vector3(2, 2, 2);
+            boss = new Boss(terrain, Content, camera, GraphicsDevice, light, player);
 
             for(int i = 0; i < 3; i++)
             {
@@ -173,7 +174,21 @@ namespace Final
 
             boss.Update();
 
-            foreach (Prize paper in assigments) { paper.Update(); }
+            for (int i = 0; i < assigments.Count; i++)
+            {
+                assigments[i].Update();
+
+                if (Vector3.Distance(assigments[i].Transform.LocalPosition, camera.Transform.LocalPosition) <= 3f)
+                {
+                    Debug.WriteLine("Pickup Item");
+
+                    if(InputManager.IsKeyPressed(Keys.F))
+                    {
+                        assigments.Remove(assigments[i]);
+                        collectedPapers++;
+                    }
+                }
+            }
 
             base.Update(gameTime);
         }
@@ -205,8 +220,8 @@ namespace Final
             }
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(font, "" + assigments.Count, new Vector2(5, 10), Color.Black);
-            //_spriteBatch.DrawString(font, "Time Played: " + (int)Time.TotalGameTime.TotalSeconds, new Vector2(5, 35), Color.LightGreen);
+            _spriteBatch.DrawString(font, "Papers Collected: ", new Vector2(5, 10), Color.Goldenrod);
+            _spriteBatch.DrawString(font, "Time Remaining: " + (90 - Time.TotalGameTime.Seconds), new Vector2(5, 35), Color.Gold);
             _spriteBatch.End();
 
             base.Draw(gameTime);
