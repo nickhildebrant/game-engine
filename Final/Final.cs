@@ -1,9 +1,9 @@
 ﻿using CPI311.GameEngine;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Final
 {
@@ -16,6 +16,10 @@ namespace Final
 
         Texture2D ceiling;
         Texture2D paper;
+
+        SoundEffectInstance soundInstance;
+        SoundEffect paperPickupSound;
+        SoundEffect officeSounds;
 
         TerrainRenderer terrain;
         Effect effect;
@@ -74,6 +78,13 @@ namespace Final
             paper = Content.Load<Texture2D>("Square");
 
             font = Content.Load<SpriteFont>("font");
+
+            paperPickupSound = Content.Load<SoundEffect>("Paper Sound Effect");
+            officeSounds = Content.Load<SoundEffect>("Work Office Sounds Ambience (Background Sound Effect)");
+            soundInstance = officeSounds.CreateInstance();
+            soundInstance.IsLooped = true;
+            soundInstance.Volume = .50f;
+            soundInstance.Play();
 
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN");
@@ -191,10 +202,23 @@ namespace Final
 
                     if (InputManager.IsKeyPressed(Keys.F))
                     {
+                        paperPickupSound.Play();
                         assigments.Remove(assigments[i]);
                         collectedPapers++;
                     }
                 }
+            }
+
+            // 3 Papers Collected
+            if(collectedPapers == 3)
+            {
+                // Spawn in exit door
+            }
+
+            // Times Up - GameOver
+            if(90 - Time.TotalGameTime.Seconds <= 0)
+            {
+                currentScene = null;
             }
 
             base.Update(gameTime);
