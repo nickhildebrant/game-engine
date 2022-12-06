@@ -330,6 +330,7 @@ namespace Final
                         Debug.WriteLine("You win!!");
                         currentScene = scenes["GameWin"];
                         timeLeft = (90 - Time.TotalGameTime.Seconds);
+                        Content.Load<SoundEffect>("victory").Play();
                     }
                 }
             }
@@ -347,6 +348,7 @@ namespace Final
             {
                 isOutofTime = true;
                 currentScene = scenes["GameOver"];
+                Content.Load<SoundEffect>("lost").Play();
             }
 
             // Collision with boss - GameOver
@@ -354,6 +356,7 @@ namespace Final
             {
                 Debug.WriteLine("Gameover, the boss caught you");
                 currentScene = scenes["GameOver"];
+                Content.Load<SoundEffect>("lost").Play();
             }
         }
 

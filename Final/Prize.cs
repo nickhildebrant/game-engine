@@ -27,6 +27,7 @@ public class Prize : GameObject
 
         Texture2D texture = Content.Load<Texture2D>("taxes");
         Renderer renderer = new Renderer(Content.Load<Model>("paper2"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
+        //Transform.Scale = new Vector3(2f, 2f, 2f);
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();

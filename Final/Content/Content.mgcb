@@ -75,6 +75,31 @@
 /processorParam:TextureFormat=Compressed
 /build:font.spritefont
 
+#begin house 2.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:house 2.fbx
+
+#begin lost.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:lost.wav
+
 #begin mazeH.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -238,6 +263,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:TerrainShader.fx
+
+#begin victory.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:victory.wav
 
 #begin Work Office Sounds Ambience (Background Sound Effect).wav
 /importer:WavImporter

@@ -26,8 +26,9 @@ public class ExitSign : GameObject
         Add<Rigidbody>(rigidbody);
 
         Texture2D texture = Content.Load<Texture2D>("Square");
-        Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
+        Renderer renderer = new Renderer(Content.Load<Model>("house 2"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
         renderer.Material.Ambient = Color.Green.ToVector3();
+        Transform.LocalScale = new Vector3(0.0005f, 0.0005f, 0.0005f);
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();
