@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -53,6 +54,11 @@ namespace Final
         List<GUIElement> guiElements;
         // **************************************
 
+        // Menu Items
+        Button playButton;
+        Button fullscreenButton;
+        Texture2D logo;
+
         public Final()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -69,6 +75,7 @@ namespace Final
 
             scenes = new Dictionary<string, Scene>();
             assigments = new List<Prize>();
+            guiElements = new List<GUIElement>();
 
             base.Initialize();
         }
@@ -121,6 +128,28 @@ namespace Final
             }
 
             exitSign = new ExitSign(terrain, Content, camera, GraphicsDevice, light);
+
+            fullscreenButton = new Button();
+            fullscreenButton.Text = "  Fullscreen Mode";
+            fullscreenButton.Texture = paper;
+            fullscreenButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 64, 320, 128, 24);
+            fullscreenButton.Action += FullScreen;
+            guiElements.Add(fullscreenButton);
+
+            playButton = new Button();
+            playButton.Text = " Play";
+            playButton.Texture = paper;
+            fullscreenButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 64, 336, 128, 24);
+            fullscreenButton.Action += PlayGame;
+            guiElements.Add(playButton);
+
+            logo = Content.Load<Texture2D>("officeLogo");
+
+            scenes.Add("Menu", new Scene(MainMenuDraw, MainMenuDraw));
+            scenes.Add("Gameplay", new Scene(PlayUpdate, PlayDraw));
+            scenes.Add("GameOver", new Scene(GameOverUpdate, GameOverDraw));
+            scenes.Add("GameWin", new Scene(WinUpdate, WinDraw));
+            currentScene = scenes["Menu"];
         }
 
         protected override void Update(GameTime gameTime)
@@ -130,6 +159,47 @@ namespace Final
             Time.Update(gameTime);
             InputManager.Update();
 
+            currentScene.Update();
+
+            base.Update(gameTime);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            currentScene.Draw();
+
+            base.Draw(gameTime);
+        }
+
+        void FullScreen(GUIElement element)
+        {
+            ScreenManager.Setup(1920, 1080);
+            ScreenManager.IsFullScreen = !ScreenManager.IsFullScreen;
+        }
+
+        void PlayGame(GUIElement element)
+        {
+            currentScene = scenes["Gameplay"];
+        }
+
+        void MainMenuUpdate()
+        {
+            foreach (GUIElement element in guiElements) element.Update();
+        }
+
+        void MainMenuDraw()
+        {
+            GraphicsDevice.Clear(Color.ForestGreen);
+            GraphicsDevice.DepthStencilState = new DepthStencilState();
+
+            _spriteBatch.Begin();
+            foreach (GUIElement element in guiElements) element.Draw(_spriteBatch, font);
+            _spriteBatch.Draw(logo, new Rectangle(ScreenManager.Width/2 - 128, 32, 256, 256), Color.Yellow);
+            _spriteBatch.End();
+        }
+
+        void PlayUpdate()
+        {
             // Movement
             if (InputManager.IsKeyDown(Keys.LeftControl))
             {
@@ -169,26 +239,26 @@ namespace Final
             // Camera movement
             if (InputManager.IsKeyDown(Keys.Left))
             {
-                player.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime); 
-                light.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime); 
+                player.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime);
+                light.Transform.Rotate(Vector3.UnitY, 3f * Time.ElapsedGameTime);
             }
 
-            if (InputManager.IsKeyDown(Keys.Right)) 
-            { 
+            if (InputManager.IsKeyDown(Keys.Right))
+            {
                 player.Transform.Rotate(Vector3.UnitY, -3f * Time.ElapsedGameTime);
                 light.Transform.Rotate(Vector3.UnitY, -3f * Time.ElapsedGameTime);
             }
-            
-            if (InputManager.IsKeyDown(Keys.Up)) 
-            { 
-                camera.Transform.Rotate(Vector3.UnitX, 2f * Time.ElapsedGameTime); 
-                light.Transform.Rotate(Vector3.UnitX, 2f * Time.ElapsedGameTime); 
+
+            if (InputManager.IsKeyDown(Keys.Up))
+            {
+                camera.Transform.Rotate(Vector3.UnitX, 2f * Time.ElapsedGameTime);
+                light.Transform.Rotate(Vector3.UnitX, 2f * Time.ElapsedGameTime);
             }
 
-            if (InputManager.IsKeyDown(Keys.Down)) 
-            { 
+            if (InputManager.IsKeyDown(Keys.Down))
+            {
                 camera.Transform.Rotate(Vector3.UnitX, -2f * Time.ElapsedGameTime);
-                light.Transform.Rotate(Vector3.UnitX, -2f * Time.ElapsedGameTime); 
+                light.Transform.Rotate(Vector3.UnitX, -2f * Time.ElapsedGameTime);
             }
 
             boss.Update();
@@ -227,42 +297,37 @@ namespace Final
                     if (InputManager.IsKeyPressed(Keys.F))
                     {
                         Debug.WriteLine("You win!!");
-                        currentScene = null;
+                        currentScene = scenes["GameWin"];
                     }
                 }
             }
 
             // 3 Papers Collected
-            if(collectedPapers == 3)
+            if (collectedPapers == 3)
             {
                 // Spawn in exit door
                 isExiting = true;
             }
 
             // Times Up - GameOver
-            if(90 - Time.TotalGameTime.Seconds <= 0)
+            if (90 - Time.TotalGameTime.Seconds <= 0)
             {
                 currentScene = null;
             }
 
             // Collision with boss - GameOver
-            if(Vector3.Distance(boss.Transform.LocalPosition, player.Transform.LocalPosition) <= 2.5f)
+            Vector3 normal;
+            if (boss.Collider.Collides(player.Collider, out normal))
             {
                 Debug.WriteLine("Gameover, the boss caught you");
-                currentScene = null;
+                currentScene = scenes["GameOver"];
             }
-
-            base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        void PlayDraw()
         {
             GraphicsDevice.Clear(Color.DimGray);
             GraphicsDevice.DepthStencilState = new DepthStencilState();
-
-            //_spriteBatch.Begin();
-            //_spriteBatch.Draw(ceiling, new Rectangle(0, 0, 400, 300), Color.White);
-            //_spriteBatch.End();
 
             effect.Parameters["View"].SetValue(camera.View);
             effect.Parameters["Projection"].SetValue(camera.Projection);
@@ -284,15 +349,33 @@ namespace Final
             }
 
             _spriteBatch.Begin();
-            if(!isExiting) for(int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
+            if (!isExiting) for (int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
             else _spriteBatch.DrawString(font, "SNEAK OUT TO THE EXIT!", new Vector2(132, 10), Color.Yellow);
 
             _spriteBatch.DrawString(font, "Papers Collected: ", new Vector2(5, 10), Color.Goldenrod);
             _spriteBatch.DrawString(font, "Time Remaining: " + (90 - Time.TotalGameTime.Seconds), new Vector2(5, 35), Color.Gold);
-            if(canPickup) _spriteBatch.DrawString(font, "Press F to pickup", new Vector2(ScreenManager.Width / 2, ScreenManager.Height / 2), Color.Yellow);
+            if (canPickup) _spriteBatch.DrawString(font, "Press F to pickup", new Vector2(ScreenManager.Width / 2, ScreenManager.Height / 2), Color.Yellow);
             _spriteBatch.End();
+        }
 
-            base.Draw(gameTime);
+        void GameOverUpdate()
+        {
+
+        }
+
+        void GameOverDraw()
+        {
+
+        }
+
+        void WinUpdate()
+        {
+
+        }
+
+        void WinDraw()
+        {
+
         }
     }
 }
