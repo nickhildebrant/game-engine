@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 
 using CPI311.GameEngine;
-using System.Drawing;
-using System.Diagnostics;
 
-public class Boss : GameObject
+public class Prize : GameObject
 {
     public AStarSearch search;
     List<Vector3> path;
@@ -19,7 +17,7 @@ public class Boss : GameObject
 
     private Random random { get; set; }
 
-    public Boss(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
+    public Prize(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light) : base()
     {
         Terrain = terrain;
 
@@ -28,8 +26,8 @@ public class Boss : GameObject
         rigidbody.Mass = 1;
         Add<Rigidbody>(rigidbody);
 
-        Texture2D texture = Content.Load<Texture2D>("criminalMaleA");
-        Renderer renderer = new Renderer(Content.Load<Model>("characterMedium"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
+        Texture2D texture = Content.Load<Texture2D>("Square");
+        Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 1);
         //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
         Add<Renderer>(renderer);
 
@@ -57,38 +55,10 @@ public class Boss : GameObject
 
     public override void Update()
     {
-        Debug.WriteLine(Transform.Forward.ToString() + " : " + Vector3.Normalize(Rigidbody.Velocity).ToString());
-        if(Math.Round(Vector3.Dot(Transform.Forward, Vector3.Normalize(Rigidbody.Velocity))) < 0)
-        {
-            Transform.Rotate(Transform.Up, Time.ElapsedGameTime * 100);
-        }
-        else if (Math.Round(Vector3.Dot(Transform.Forward, Vector3.Normalize(Rigidbody.Velocity))) > 0)
-        {
-            Transform.Rotate(Transform.Down, Time.ElapsedGameTime * 100);
-        }
+        Transform.Rotate(Transform.Up, Time.ElapsedGameTime);
+        Transform.LocalPosition *= 2;//(float)Math.Sin(10 * Time.ElapsedGameTime);
 
-        if (path != null && path.Count > 0)
-        {
-            Vector3 currentPosition = Transform.Position;
-            Vector3 destinationPoint = GetGridPosition(path[0]);
-            // Move to the destination along the path
-            currentPosition.Y = 0;
-            destinationPoint.Y = 0;
-            Vector3 direction = Vector3.Distance(destinationPoint, currentPosition) == 0 ? Vector3.Zero : Vector3.Normalize(destinationPoint - currentPosition);
-
-            this.Rigidbody.Velocity = new Vector3(direction.X, 0, direction.Z) * speed;
-
-            if (Vector3.Distance(currentPosition, destinationPoint) < 1f) // if it reaches to a point, go to the next in path
-            {
-                path.RemoveAt(0);
-                if (path.Count == 0) // if it reached to the goal
-                {
-                    RandomPathFinding();
-                    return;
-                }
-            }
-        }
-        else
+        if (path == null)
         {
             // Search again to make a new path.
             RandomPathFinding();
@@ -104,15 +74,15 @@ public class Boss : GameObject
     {
         float gridW = Terrain.size.X / search.Cols;
         float gridH = Terrain.size.Y / search.Rows;
-        return new Vector3(gridW * gridPos.X + gridW / 2 - Terrain.size.X / 2, 0, gridH * gridPos.Z + gridH / 2 - Terrain.size.Y / 2);
+        return new Vector3(gridW * gridPos.X + gridW / 2 - Terrain.size.X / 2, 1, gridH * gridPos.Z + gridH / 2 - Terrain.size.Y / 2);
     }
 
     private void RandomPathFinding()
     {
-        if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
+        if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
         else search.Start = search.End;
 
-        while (!(search.End = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable);
+        while (!(search.End = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
         search.Search();
         path = new List<Vector3>();
 
