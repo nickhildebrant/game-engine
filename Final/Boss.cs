@@ -16,7 +16,7 @@ public class Boss : GameObject
     public AStarSearch search;
     List<Vector3> path;
 
-    public float speed = 5f; //moving speed
+    public float speed = 10f; //moving speed
     private int gridSize = 20; //grid size
     private TerrainRenderer Terrain;
 
@@ -69,23 +69,23 @@ public class Boss : GameObject
     public override void Update()
     {
         Vector3 distanceVector = Transform.LocalPosition - player.Transform.LocalPosition;
-        if (Vector3.Dot(Vector3.Normalize(Rigidbody.Velocity), Vector3.Normalize(distanceVector)) <= -0.7f 
+        if (Vector3.Dot(Vector3.Normalize(Rigidbody.Velocity), Vector3.Normalize(distanceVector)) <= -0.5f 
             && !haveThreadRunning && distanceVector.Length() <= 30f)
         {
             haveThreadRunning = true;
             ThreadPool.QueueUserWorkItem(new WaitCallback(PathfindingReset));
             Debug.WriteLine("Player spotted!!!");
             alertSound.Play();
-            speed = 20f;
+            speed *= 5f;
         }
 
-        if(Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) < 0)
+        if(Math.Round(Vector3.Dot(Transform.Right, Vector3.Normalize(Rigidbody.Velocity))) > 0)
         {
-            //Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
+            Transform.Rotate(Vector3.Backward, Time.ElapsedGameTime * 100);
         }
-        else if (Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) > 0)
+        else if (Math.Round(Vector3.Dot(Transform.Right, Vector3.Normalize(Rigidbody.Velocity))) < 0)
         {
-            //Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
+            Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
         }
 
         if (path != null && path.Count > 0)
