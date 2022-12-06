@@ -25,8 +25,8 @@ public class Prize : GameObject
         rigidbody.Mass = 1;
         Add<Rigidbody>(rigidbody);
 
-        Texture2D texture = Content.Load<Texture2D>("Square");
-        Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
+        Texture2D texture = Content.Load<Texture2D>("taxes");
+        Renderer renderer = new Renderer(Content.Load<Model>("paper2"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();

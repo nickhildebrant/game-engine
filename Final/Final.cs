@@ -35,9 +35,11 @@ namespace Final
 
         List<Prize> assigments;
 
+        int timeLeft = 0;
         bool canPickup = false;
         bool isExiting = false;
         int collectedPapers = 0;
+        bool isOutofTime = false;
 
         // ****** Scene Items ******************
         public class Scene
@@ -99,7 +101,7 @@ namespace Final
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN");
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 12, 1);//12, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 2, 1);//12, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));
@@ -159,6 +161,8 @@ namespace Final
             Time.Update(gameTime);
             InputManager.Update();
 
+            if (soundInstance.State != SoundState.Playing) soundInstance.Play();
+
             currentScene.Update();
 
             base.Update(gameTime);
@@ -175,6 +179,8 @@ namespace Final
         {
             ScreenManager.Setup(1920, 1080);
             ScreenManager.IsFullScreen = true;
+            ScreenManager.Width = 1920;
+            ScreenManager.Height = 1080;
             currentScene = scenes["Gameplay"];
         }
 
@@ -303,6 +309,7 @@ namespace Final
                     {
                         Debug.WriteLine("You win!!");
                         currentScene = scenes["GameWin"];
+                        timeLeft = (90 - Time.TotalGameTime.Seconds);
                     }
                 }
             }
@@ -318,7 +325,8 @@ namespace Final
             // Times Up - GameOver
             if (90 - Time.TotalGameTime.Seconds <= 0)
             {
-                currentScene = null;
+                isOutofTime = true;
+                currentScene = scenes["GameOver"];
             }
 
             // Collision with boss - GameOver
@@ -332,6 +340,11 @@ namespace Final
         void PlayDraw()
         {
             GraphicsDevice.Clear(Color.DimGray);
+
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(ceiling, new Rectangle(0, 0, ScreenManager.Width, ScreenManager.Height/2), Color.LightYellow);
+            _spriteBatch.End();
+
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
             effect.Parameters["View"].SetValue(camera.View);
@@ -354,8 +367,8 @@ namespace Final
             }
 
             _spriteBatch.Begin();
-            if (!isExiting) for (int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
-            else _spriteBatch.DrawString(font, "SNEAK OUT TO THE EXIT!", new Vector2(132, 10), Color.Yellow);
+            if (!isExiting) for (int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(192 + i * 28, 8, 24, 24), Color.White);
+            else _spriteBatch.DrawString(font, "SNEAK OUT TO THE EXIT!", new Vector2(192, 10), Color.Yellow);
 
             _spriteBatch.DrawString(font, "Papers Collected: ", new Vector2(5, 10), Color.Goldenrod);
             _spriteBatch.DrawString(font, "Time Remaining: " + (90 - Time.TotalGameTime.Seconds), new Vector2(5, 35), Color.Gold);
@@ -365,22 +378,39 @@ namespace Final
 
         void GameOverUpdate()
         {
-
+            playButton.Update();
         }
 
         void GameOverDraw()
         {
+            GraphicsDevice.Clear(Color.DarkRed);
 
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(font, "YOU LOSE!", new Vector2(108, 100), Color.White);
+            if(isOutofTime)_spriteBatch.DrawString(font, "You ran out of time, and now you must work Overtime.", new Vector2(108, 150), Color.White);
+            else _spriteBatch.DrawString(font, "The boss caught you, and now you must work Overtime.", new Vector2(108, 200), Color.White);
+            _spriteBatch.DrawString(font, "Play Again?", new Vector2(108, 250), Color.White);
+            _spriteBatch.DrawString(font, "Press ESC to exit", new Vector2(108, 300), Color.White);
+            _spriteBatch.End();
         }
 
         void WinUpdate()
         {
-
+            playButton.Update();
         }
 
         void WinDraw()
         {
+            GraphicsDevice.Clear(Color.DarkOliveGreen);
 
+            _spriteBatch.Begin();
+
+            _spriteBatch.DrawString(font, "YOU WIN!", new Vector2(108, 100), Color.White);
+            _spriteBatch.DrawString(font, "You got out of work with " + timeLeft + " seconds left!", new Vector2(108, 150), Color.White);
+            _spriteBatch.DrawString(font, "Play Again?", new Vector2(108, 250), Color.White);
+            _spriteBatch.DrawString(font, "Press ESC to exit", new Vector2(108, 300), Color.White);
+            
+            _spriteBatch.End();
         }
     }
 }
