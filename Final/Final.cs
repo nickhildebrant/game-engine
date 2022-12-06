@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -25,6 +25,13 @@ namespace Final
 
         TerrainRenderer terrain;
         Effect effect;
+
+        // Particles
+        ParticleManager particleManager;
+        Texture2D particleTex;
+        Effect particleEffect;
+
+        Random random = new Random();
 
         Camera camera;
         Light light;
@@ -108,6 +115,11 @@ namespace Final
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));
             effect.Parameters["SpecularColor"].SetValue(new Vector3(0.2f, 0.2f, 0.1f));
             effect.Parameters["Shininess"].SetValue(10f);
+
+            // Particle
+            particleManager = new ParticleManager(GraphicsDevice, 100);
+            particleEffect = Content.Load<Effect>("ParticleShader-complete");
+            particleTex = Content.Load<Texture2D>("taxes");
 
             camera = new Camera();
             camera.Transform = new Transform();
@@ -289,6 +301,14 @@ namespace Final
                     if (InputManager.IsKeyPressed(Keys.F))
                     {
                         paperPickupSound.Play();
+
+                        Particle particle = particleManager.getNext();
+                        particle.Position = assigments[i].Transform.LocalPosition;
+                        particle.Velocity = new Vector3(random.Next(-5, 5), random.Next(-5, 5), random.Next(-50, 50));
+                        particle.Acceleration = new Vector3(0, 3, 0);
+                        particle.MaxAge = random.Next(1, 8);
+                        particle.Init();
+
                         assigments.Remove(assigments[i]);
                         collectedPapers++;
                     }
@@ -354,6 +374,8 @@ namespace Final
             effect.Parameters["LightPosition"].SetValue(light.Transform.Position);
             effect.Parameters["NormalMap"].SetValue(terrain.NormalMap);
 
+            particleManager.Draw(GraphicsDevice);
+
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -365,6 +387,13 @@ namespace Final
 
                 foreach (Prize paper in assigments) { paper.Draw(); }
             }
+
+            particleEffect.CurrentTechnique = particleEffect.Techniques["particle"];
+            particleEffect.CurrentTechnique.Passes[0].Apply();
+            particleEffect.Parameters["ViewProj"].SetValue(camera.View * camera.Projection);
+            particleEffect.Parameters["World"].SetValue(Matrix.Identity);
+            particleEffect.Parameters["CamIRot"].SetValue(Matrix.Invert(Matrix.CreateFromQuaternion(camera.Transform.Rotation)));
+            particleEffect.Parameters["Texture"].SetValue(particleTex);
 
             _spriteBatch.Begin();
             if (!isExiting) for (int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(192 + i * 28, 8, 24, 24), Color.White);
@@ -391,6 +420,8 @@ namespace Final
             else _spriteBatch.DrawString(font, "The boss caught you, and now you must work Overtime.", new Vector2(108, 200), Color.White);
             _spriteBatch.DrawString(font, "Play Again?", new Vector2(108, 250), Color.White);
             _spriteBatch.DrawString(font, "Press ESC to exit", new Vector2(108, 300), Color.White);
+
+            //_spriteBatch.Draw(Content.Load<Texture2D>("businessGuy"), new Rectangle(ScreenManager.Width/2, 100, 1024, 1024), Color.White);
             _spriteBatch.End();
         }
 
