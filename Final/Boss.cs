@@ -5,15 +5,13 @@ using System;
 using System.Collections.Generic;
 
 using CPI311.GameEngine;
-using System.Drawing;
-using System.Diagnostics;
 
 public class Boss : GameObject
 {
     public AStarSearch search;
     List<Vector3> path;
 
-    private float speed = 5f; //moving speed
+    public float speed = 5f; //moving speed
     private int gridSize = 20; //grid size
     private TerrainRenderer Terrain;
 
@@ -30,7 +28,7 @@ public class Boss : GameObject
 
         Texture2D texture = Content.Load<Texture2D>("criminalMaleA");
         Renderer renderer = new Renderer(Content.Load<Model>("characterMedium"), Transform, camera, light, Content, graphicsDevice, 0f, texture, "SimpleShading", 1);
-        //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
+        renderer.Material.Ambient = Color.Brown.ToVector3();
         Transform.Rotate(Vector3.UnitX, -MathHelper.PiOver2);
         Add<Renderer>(renderer);
 
@@ -60,11 +58,11 @@ public class Boss : GameObject
     {
         if(Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) < 0)
         {
-            Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
+            //Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
         }
         else if (Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) > 0)
         {
-            Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
+            //Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
         }
 
         if (path != null && path.Count > 0)

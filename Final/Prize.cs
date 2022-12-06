@@ -11,7 +11,6 @@ public class Prize : GameObject
     public AStarSearch search;
     List<Vector3> path;
 
-    private float speed = 5f; //moving speed
     private int gridSize = 20; //grid size
     private TerrainRenderer Terrain;
 
@@ -28,7 +27,6 @@ public class Prize : GameObject
 
         Texture2D texture = Content.Load<Texture2D>("Square");
         Renderer renderer = new Renderer(Content.Load<Model>("Sphere"), Transform, camera, light, Content, graphicsDevice, 20f, texture, "SimpleShading", 3);
-        //renderer.Material.Ambient = Color.SandyBrown.ToVector3();
         Add<Renderer>(renderer);
 
         SphereCollider sphereCollider = new SphereCollider();

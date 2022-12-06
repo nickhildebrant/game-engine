@@ -15,6 +15,7 @@ namespace Final
         SpriteFont font;
 
         Texture2D ceiling;
+        Texture2D paper;
 
         TerrainRenderer terrain;
         Effect effect;
@@ -27,6 +28,7 @@ namespace Final
 
         List<Prize> assigments;
 
+        bool canPickup = false;
         int collectedPapers = 0;
 
         // ****** Scene Items ******************
@@ -69,6 +71,7 @@ namespace Final
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             ceiling = Content.Load<Texture2D>("ceiling");
+            paper = Content.Load<Texture2D>("Square");
 
             font = Content.Load<SpriteFont>("font");
 
@@ -81,7 +84,7 @@ namespace Final
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));
             effect.Parameters["DiffuseColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));
             effect.Parameters["SpecularColor"].SetValue(new Vector3(0.2f, 0.2f, 0.1f));
-            effect.Parameters["Shininess"].SetValue(200f);
+            effect.Parameters["Shininess"].SetValue(10f);
 
             camera = new Camera();
             camera.Transform = new Transform();
@@ -174,15 +177,19 @@ namespace Final
 
             boss.Update();
 
+            canPickup = false;
+
             for (int i = 0; i < assigments.Count; i++)
             {
                 assigments[i].Update();
 
-                if (Vector3.Distance(assigments[i].Transform.LocalPosition, camera.Transform.LocalPosition) <= 3f)
+                if (Vector3.Distance(assigments[i].Transform.LocalPosition, camera.Transform.LocalPosition) <= 6f)
                 {
-                    Debug.WriteLine("Pickup Item");
+                    //Debug.WriteLine("Pickup Item");
 
-                    if(InputManager.IsKeyPressed(Keys.F))
+                    canPickup = true;
+
+                    if (InputManager.IsKeyPressed(Keys.F))
                     {
                         assigments.Remove(assigments[i]);
                         collectedPapers++;
@@ -220,8 +227,10 @@ namespace Final
             }
 
             _spriteBatch.Begin();
+            for(int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
             _spriteBatch.DrawString(font, "Papers Collected: ", new Vector2(5, 10), Color.Goldenrod);
             _spriteBatch.DrawString(font, "Time Remaining: " + (90 - Time.TotalGameTime.Seconds), new Vector2(5, 35), Color.Gold);
+            if(canPickup) _spriteBatch.DrawString(font, "Press F to pickup", new Vector2(ScreenManager.Width / 2, ScreenManager.Height / 2), Color.Yellow);
             _spriteBatch.End();
 
             base.Draw(gameTime);
