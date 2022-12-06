@@ -108,7 +108,7 @@ namespace Final
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN");
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 2, 1);//12, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 12, 1);//12, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));

@@ -150,7 +150,7 @@ public class Boss : GameObject
         while (haveThreadRunning)
         {
             System.Threading.Thread.Sleep(6000);
-            speed = 5f;
+            speed = 10f;
             haveThreadRunning = false;
         }
     }
