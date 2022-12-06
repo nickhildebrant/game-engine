@@ -132,20 +132,20 @@ namespace Final
             fullscreenButton = new Button();
             fullscreenButton.Text = "  Fullscreen Mode";
             fullscreenButton.Texture = paper;
-            fullscreenButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 64, 320, 128, 24);
+            fullscreenButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 96, 320, 192, 24);
             fullscreenButton.Action += FullScreen;
             guiElements.Add(fullscreenButton);
 
             playButton = new Button();
-            playButton.Text = " Play";
+            playButton.Text = "           Play";
             playButton.Texture = paper;
-            fullscreenButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 64, 336, 128, 24);
-            fullscreenButton.Action += PlayGame;
+            playButton.Bounds = new Rectangle(ScreenManager.Width / 2 - 96, 352, 192, 24);
+            playButton.Action += PlayGame;
             guiElements.Add(playButton);
 
             logo = Content.Load<Texture2D>("officeLogo");
 
-            scenes.Add("Menu", new Scene(MainMenuDraw, MainMenuDraw));
+            scenes.Add("Menu", new Scene(MainMenuUpdate, MainMenuDraw));
             scenes.Add("Gameplay", new Scene(PlayUpdate, PlayDraw));
             scenes.Add("GameOver", new Scene(GameOverUpdate, GameOverDraw));
             scenes.Add("GameWin", new Scene(WinUpdate, WinDraw));
@@ -174,7 +174,8 @@ namespace Final
         void FullScreen(GUIElement element)
         {
             ScreenManager.Setup(1920, 1080);
-            ScreenManager.IsFullScreen = !ScreenManager.IsFullScreen;
+            ScreenManager.IsFullScreen = true;
+            currentScene = scenes["Gameplay"];
         }
 
         void PlayGame(GUIElement element)
@@ -195,6 +196,10 @@ namespace Final
             _spriteBatch.Begin();
             foreach (GUIElement element in guiElements) element.Draw(_spriteBatch, font);
             _spriteBatch.Draw(logo, new Rectangle(ScreenManager.Width/2 - 128, 32, 256, 256), Color.Yellow);
+            _spriteBatch.DrawString(font, "OVERTIME", new Vector2(ScreenManager.Width / 2 - 56, 292), Color.Gold);
+            _spriteBatch.DrawString(font, "Collect your work as quickly as possible to leave work early,", new Vector2(ScreenManager.Width / 2 - 292, 392), Color.Gold);
+            _spriteBatch.DrawString(font, "but don't get caught by your boss!", new Vector2(ScreenManager.Width / 2 - 162, 416), Color.Gold);
+            _spriteBatch.DrawString(font, "WASD to move, CTRL to crouch/sneak, ARROW KEYS to look around", new Vector2(ScreenManager.Width / 2 - 352, 440), Color.Gold);
             _spriteBatch.End();
         }
 
