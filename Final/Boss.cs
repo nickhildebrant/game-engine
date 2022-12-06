@@ -5,9 +5,14 @@ using System;
 using System.Collections.Generic;
 
 using CPI311.GameEngine;
+using System.Diagnostics;
+using Microsoft.Xna.Framework.Audio;
+using System.Threading;
 
 public class Boss : GameObject
 {
+    bool haveThreadRunning = false;
+
     public AStarSearch search;
     List<Vector3> path;
 
@@ -15,11 +20,18 @@ public class Boss : GameObject
     private int gridSize = 20; //grid size
     private TerrainRenderer Terrain;
 
+    Player player;
+
+    SoundEffect alertSound;
+
     private Random random { get; set; }
 
     public Boss(TerrainRenderer terrain, ContentManager Content, Camera camera, GraphicsDevice graphicsDevice, Light light, Player player) : base()
     {
         Terrain = terrain;
+        this.player = player;
+
+        alertSound = Content.Load<SoundEffect>("Metal Gear Solid： Alert (!) メタルギアソリッド");
 
         Rigidbody rigidbody = new Rigidbody();
         rigidbody.Transform = Transform;
@@ -56,6 +68,21 @@ public class Boss : GameObject
 
     public override void Update()
     {
+        Vector3 distanceVector = Transform.LocalPosition - player.Transform.LocalPosition;
+        if (Vector3.Dot(Vector3.Normalize(Rigidbody.Velocity), Vector3.Normalize(distanceVector)) <= -0.7f 
+            && !haveThreadRunning && distanceVector.Length() <= 30f)
+        {
+            haveThreadRunning = true;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(PathfindingReset));
+            Debug.WriteLine("Player spotted!!!");
+            alertSound.Play();
+        }
+
+        if(haveThreadRunning)
+        {
+
+        }
+
         if(Math.Round(Vector3.Dot(Transform.Up, Vector3.Normalize(Rigidbody.Velocity))) < 0)
         {
             //Transform.Rotate(Vector3.Forward, Time.ElapsedGameTime * 100);
@@ -119,6 +146,37 @@ public class Boss : GameObject
         {
             path.Insert(0, current.Position);
             current = current.Parent;
+        }
+    }
+
+    private void PlayerPathFinding()
+    {
+        if (path == null) while (!(search.Start = search.Nodes[random.Next(search.Rows), random.Next(search.Cols)]).Passable) ;
+        else search.Start = search.End;
+
+        int row = (((int)player.Transform.Position.X + 44) / 5) % search.Rows + 1;
+        int col = (((int)player.Transform.Position.Z + 44) / 5) % search.Cols + 1;
+        Debug.WriteLine("[" + row + "," + col + "]");
+
+        //search.End = search.Nodes[search.Rows / 2, search.Cols / 2];
+        search.End = search.Nodes[col, row];
+        search.Search();
+        path = new List<Vector3>();
+
+        AStarNode current = search.End;
+        while (current != null)
+        {
+            path.Insert(0, current.Position);
+            current = current.Parent;
+        }
+    }
+
+    private void PathfindingReset(Object obj)
+    {
+        while (haveThreadRunning)
+        {
+            System.Threading.Thread.Sleep(6000);
+            haveThreadRunning = false;
         }
     }
 }

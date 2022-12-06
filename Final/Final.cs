@@ -33,6 +33,7 @@ namespace Final
         List<Prize> assigments;
 
         bool canPickup = false;
+        bool isExiting = false;
         int collectedPapers = 0;
 
         // ****** Scene Items ******************
@@ -89,7 +90,7 @@ namespace Final
             terrain = new TerrainRenderer(Content.Load<Texture2D>("mazeH"), Vector2.One * 100, Vector2.One * 200);
             terrain.NormalMap = Content.Load<Texture2D>("mazeN");
             terrain.Transform = new Transform();
-            terrain.Transform.LocalScale *= new Vector3(1, 2, 1);//12, 1);
+            terrain.Transform.LocalScale *= new Vector3(1, 12, 1);//12, 1);
 
             effect = Content.Load<Effect>("TerrainShader");
             effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f, 0.1f, 0.1f));//new Vector3(0.2f, 0.2f, 0.2f));
@@ -213,6 +214,7 @@ namespace Final
             if(collectedPapers == 3)
             {
                 // Spawn in exit door
+                isExiting = true;
             }
 
             // Times Up - GameOver
@@ -251,7 +253,9 @@ namespace Final
             }
 
             _spriteBatch.Begin();
-            for(int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
+            if(!isExiting) for(int i = 0; i < collectedPapers; i++) _spriteBatch.Draw(paper, new Rectangle(132 + i * 28, 4, 24, 24), Color.White);
+            else _spriteBatch.DrawString(font, "SNEAK OUT TO THE EXIT!", new Vector2(132, 10), Color.Yellow);
+
             _spriteBatch.DrawString(font, "Papers Collected: ", new Vector2(5, 10), Color.Goldenrod);
             _spriteBatch.DrawString(font, "Time Remaining: " + (90 - Time.TotalGameTime.Seconds), new Vector2(5, 35), Color.Gold);
             if(canPickup) _spriteBatch.DrawString(font, "Press F to pickup", new Vector2(ScreenManager.Width / 2, ScreenManager.Height / 2), Color.Yellow);

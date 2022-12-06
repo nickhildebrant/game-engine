@@ -62,7 +62,7 @@ public class Prize : GameObject
             Transform.LocalPosition = GetGridPosition(path[0]);
         }
 
-        this.Transform.LocalPosition = new Vector3(this.Transform.LocalPosition.X, (float)(1 + Math.Sin(Time.TotalGameTime.Milliseconds / 200.0f)), this.Transform.LocalPosition.Z) + Vector3.Up;
+        this.Transform.LocalPosition = new Vector3(this.Transform.LocalPosition.X, (float)(2 + Math.Sin(Time.TotalGameTime.Milliseconds / 200.0f)), this.Transform.LocalPosition.Z) + Vector3.Up;
         Transform.Update();
         base.Update();
     }
