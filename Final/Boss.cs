@@ -31,7 +31,7 @@ public class Boss : GameObject
         Terrain = terrain;
         this.player = player;
 
-        alertSound = Content.Load<SoundEffect>("Metal Gear Solid： Alert (!) メタルギアソリッド");
+        alertSound = Content.Load<SoundEffect>("alert");
 
         Rigidbody rigidbody = new Rigidbody();
         rigidbody.Transform = Transform;

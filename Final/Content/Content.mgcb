@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin alert.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:alert.wav
+
 #begin businessGuy.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -147,12 +153,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:mazeN2.png
-
-#begin Metal Gear Solid： Alert (!) メタルギアソリッド.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Metal Gear Solid： Alert (!) メタルギアソリッド.wav
 
 #begin officeDoor.png
 /importer:TextureImporter
