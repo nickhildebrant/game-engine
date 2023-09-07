@@ -1,1 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?><PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><SourceFile>C:/Users/nickh/OneDrive/Documents/GitHub/game-engine/Lab1/Content/font.spritefont</SourceFile><SourceTime>2022-12-06T11:54:18.2023808-07:00</SourceTime><DestFile>C:/Users/nickh/OneDrive/Documents/GitHub/game-engine/Lab1/Content/bin/Windows/Content/font.xnb</DestFile><DestTime>2022-12-06T12:30:37.0750935-07:00</DestTime><Importer>FontDescriptionImporter</Importer><ImporterTime>2022-07-26T04:44:56-07:00</ImporterTime><Processor>FontDescriptionProcessor</Processor><ProcessorTime>2022-07-26T04:44:56-07:00</ProcessorTime><Parameters><Key>PremultiplyAlpha</Key><Value>True</Value></Parameters><Parameters><Key>TextureFormat</Key><Value>Compressed</Value></Parameters><Dependencies /><BuildAsset /><BuildOutput /></PipelineBuildEvent>
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/nickh/source/repos/game-engine/Lab1/Content/font.spritefont</SourceFile>
+  <SourceTime>2023-09-04T14:35:16.7116608-07:00</SourceTime>
+  <DestFile>C:/Users/nickh/source/repos/game-engine/Lab1/Content/bin/Windows/Content/font.xnb</DestFile>
+  <DestTime>2023-09-06T21:31:45.9549261-07:00</DestTime>
+  <Importer>FontDescriptionImporter</Importer>
+  <ImporterTime>2022-07-26T04:44:56-07:00</ImporterTime>
+  <Processor>FontDescriptionProcessor</Processor>
+  <ProcessorTime>2022-07-26T04:44:56-07:00</ProcessorTime>
+  <Parameters>
+    <Key>PremultiplyAlpha</Key>
+    <Value>True</Value>
+  </Parameters>
+  <Parameters>
+    <Key>TextureFormat</Key>
+    <Value>Compressed</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>
