@@ -125,8 +125,8 @@ namespace CPI311.Labs
             // Space key changes the order in which the world is created
             if (InputManager.IsKeyPressed(Keys.Space)) orderToggle = !orderToggle;
 
-            if (cameraMode) projection = Matrix.CreatePerspectiveOffCenter(cameraCenter.X - cameraSize.X, cameraCenter.X + cameraSize.X, cameraCenter.Y - cameraSize.Y, cameraCenter.Y + cameraSize.Y, 1f, 100f);
-            else projection = Matrix.CreateOrthographicOffCenter(cameraCenter.X - cameraSize.X, cameraCenter.X + cameraSize.X, cameraCenter.Y - cameraSize.Y, cameraCenter.Y + cameraSize.Y, 1f, 100f);
+            if (cameraMode) projection = Matrix.CreatePerspectiveOffCenter(cameraCenter.X - cameraSize.X/2, cameraCenter.X + cameraSize.X/2, cameraCenter.Y - cameraSize.Y/2, cameraCenter.Y + cameraSize.Y/2, 1f, 100f);
+            else projection = Matrix.CreateOrthographicOffCenter(cameraCenter.X - cameraSize.X/2, cameraCenter.X + cameraSize.X/2, cameraCenter.Y - cameraSize.Y/2, cameraCenter.Y + cameraSize.Y/2, 1f, 100f);
 
             if (orderToggle) world = Matrix.CreateScale(modelScale) * Matrix.CreateFromYawPitchRoll(yaw, pitch, roll) * Matrix.CreateTranslation(modelPosition); // scale * rot * trans
             else world = Matrix.CreateTranslation(modelPosition) * Matrix.CreateFromYawPitchRoll(yaw, pitch, roll) * Matrix.CreateScale(modelScale);            // trans * rot * scal
